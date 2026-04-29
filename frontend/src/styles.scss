@@ -1,39 +1,297 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+// ─── Angular Material Theme ────────────────────────────────────────────────
 html {
   height: 100%;
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+        primary: mat.$rose-palette,
+        tertiary: mat.$orange-palette,
       ),
-      typography: Roboto,
+      typography: Inter,
       density: 0,
     )
   );
 }
 
+// ─── Brand CSS Custom Properties ───────────────────────────────────────────
+:root {
+  // Brand colors
+  --kc-primary:        #7B2D4E;   // deep rose/burgundy
+  --kc-primary-light:  #A0435F;
+  --kc-primary-dark:   #561D37;
+  --kc-accent:         #C9956C;   // rose gold
+  --kc-accent-dark:    #A87050;
+  --kc-gold:           #D4AF37;
+  --kc-gold-light:     #EDD87A;
+
+  // Neutral / surface
+  --kc-surface:        #FAF7F2;   // warm cream
+  --kc-surface-alt:    #F3EDE5;
+  --kc-border:         #E8D5C4;
+  --kc-divider:        #EDE4DB;
+
+  // Text
+  --kc-text-primary:   #2C1810;
+  --kc-text-secondary: #6E5A5A;
+  --kc-text-muted:     #9E8A87;
+  --kc-text-on-dark:   #FAF7F2;
+
+  // Spacing scale (8px base)
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  24px;
+  --sp-6:  32px;
+  --sp-7:  48px;
+  --sp-8:  64px;
+  --sp-9:  80px;
+  --sp-10: 96px;
+
+  // Shadows
+  --shadow-xs:  0 1px 3px rgba(44, 24, 16, 0.08);
+  --shadow-sm:  0 2px 8px rgba(44, 24, 16, 0.10);
+  --shadow-md:  0 4px 16px rgba(44, 24, 16, 0.12);
+  --shadow-lg:  0 8px 32px rgba(44, 24, 16, 0.15);
+
+  // Radius
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  20px;
+  --radius-full: 9999px;
+
+  // Transitions
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.35s ease;
+
+  // Navbar height
+  --navbar-height: 68px;
+}
+
+// ─── Dark theme overrides ──────────────────────────────────────────────────
+[data-theme='dark'] {
+  --kc-surface:        #1A0E12;
+  --kc-surface-alt:    #241419;
+  --kc-border:         #3D2030;
+  --kc-divider:        #2E1820;
+  --kc-text-primary:   #F5EDE8;
+  --kc-text-secondary: #C4A8A0;
+  --kc-text-muted:     #8B6E6B;
+  color-scheme: dark;
+}
+
+// ─── Body / Base ───────────────────────────────────────────────────────────
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
+  background-color: var(--kc-surface);
+  color: var(--kc-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
   margin: 0;
   height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-/* You can add global styles to this file, and also import other style files */
+
+[data-theme='dark'] body {
+  color-scheme: dark;
+  background-color: var(--kc-surface);
+  color: var(--kc-text-primary);
+}
+
+// ─── Typography ────────────────────────────────────────────────────────────
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: var(--kc-text-primary);
+  line-height: 1.25;
+  margin: 0;
+}
+
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 600; }
+h3 { font-size: clamp(1.15rem, 2vw, 1.5rem); font-weight: 600; }
+h4 { font-size: 1.125rem; font-weight: 500; }
+
+p { margin: 0; }
+a { color: var(--kc-primary); text-decoration: none; transition: color var(--transition-base); }
+a:hover { color: var(--kc-primary-light); }
+
+// ─── Utility Classes ───────────────────────────────────────────────────────
+.text-brand     { color: var(--kc-primary) !important; }
+.text-accent    { color: var(--kc-accent) !important; }
+.text-gold      { color: var(--kc-gold) !important; }
+.text-muted     { color: var(--kc-text-muted) !important; }
+.text-secondary { color: var(--kc-text-secondary) !important; }
+
+.section {
+  padding: var(--sp-9) 0;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  font-weight: 600;
+  color: var(--kc-text-primary);
+  margin-bottom: var(--sp-2);
+  position: relative;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--kc-accent), var(--kc-gold));
+    border-radius: 2px;
+    margin-top: var(--sp-2);
+  }
+}
+
+.section-subtitle {
+  color: var(--kc-text-secondary);
+  font-size: 1rem;
+  margin-bottom: var(--sp-6);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--sp-5);
+}
+
+.container-sm {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 var(--sp-5);
+}
+
+.page-header {
+  padding: var(--sp-7) 0 var(--sp-5);
+  border-bottom: 1px solid var(--kc-divider);
+  margin-bottom: var(--sp-6);
+
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+// ─── Loading States ─────────────────────────────────────────────────────────
+.loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--sp-8) 0;
+}
+
+// ─── Empty States ───────────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-8) var(--sp-5);
+  text-align: center;
+  gap: var(--sp-3);
+  color: var(--kc-text-muted);
+
+  mat-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    color: var(--kc-border);
+  }
+
+  h2 { color: var(--kc-text-secondary); font-size: 1.25rem; }
+  p  { color: var(--kc-text-muted); font-size: 0.95rem; }
+}
+
+// ─── Price Styling ──────────────────────────────────────────────────────────
+.price {
+  font-weight: 600;
+  color: var(--kc-text-primary);
+  font-size: 1.1rem;
+}
+
+.price-original {
+  color: var(--kc-text-muted);
+  text-decoration: line-through;
+  font-size: 0.9rem;
+  margin-right: var(--sp-1);
+}
+
+.price-discounted {
+  color: var(--kc-primary);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.sale-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--kc-primary);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-left: var(--sp-1);
+}
+
+// ─── Angular Material Overrides ─────────────────────────────────────────────
+.mat-mdc-card {
+  background-color: #ffffff !important;
+  border: 1px solid var(--kc-divider) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+[data-theme='dark'] .mat-mdc-card {
+  background-color: #2A1820 !important;
+  border-color: var(--kc-border) !important;
+}
+
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--kc-primary) !important;
+}
+
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    border-radius: var(--radius-md) !important;
+  }
+}
+
+// ─── Scrollbar ──────────────────────────────────────────────────────────────
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--kc-surface-alt); }
+::-webkit-scrollbar-thumb { background: var(--kc-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--kc-accent); }
+
+// ─── Animations ─────────────────────────────────────────────────────────────
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}

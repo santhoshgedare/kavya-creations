@@ -1,66 +1,77 @@
 @if (loading()) {
   <div class="loading-center">
-    <mat-spinner diameter="64"></mat-spinner>
+    <mat-spinner diameter="56"></mat-spinner>
   </div>
 } @else if (order(); as o) {
   <div class="order-detail-page">
     <div class="order-header">
       <div>
-        <a mat-button routerLink="/profile">← Back to Orders</a>
+        <a mat-button class="back-link" routerLink="/profile">
+          <mat-icon>arrow_back</mat-icon> Back to Orders
+        </a>
         <h1>Order #{{ o.orderNumber }}</h1>
-        <p class="order-date">Placed on {{ o.createdAt | date:'mediumDate' }}</p>
+        <p class="order-date">Placed on {{ o.createdAt | date:'longDate' }}</p>
       </div>
       <div class="order-badges">
         <mat-chip-set>
-          <mat-chip [class]="'status-' + o.status">{{ getStatusLabel(o.status) }}</mat-chip>
-          <mat-chip [class]="'payment-' + o.paymentStatus">{{ getPaymentLabel(o.paymentStatus) }}</mat-chip>
+          <mat-chip>{{ getStatusLabel(o.status) }}</mat-chip>
+          <mat-chip>{{ getPaymentLabel(o.paymentStatus) }}</mat-chip>
         </mat-chip-set>
       </div>
     </div>
 
     <div class="order-layout">
       <!-- Items -->
-      <mat-card class="items-card">
-        <mat-card-content>
-          <h2>Items</h2>
-          @for (item of o.items; track item.productId) {
-            <div class="order-item">
-              <div class="item-info">
-                <h4>{{ item.productName }}</h4>
-                <p>Qty: {{ item.quantity }} × {{ item.unitPrice | currency:'INR':'symbol':'1.0-0' }}</p>
-              </div>
-              <div class="item-total">{{ item.subTotal | currency:'INR':'symbol':'1.0-0' }}</div>
+      <div class="items-card">
+        <h2>Order Items</h2>
+        @for (item of o.items; track item.productId) {
+          <div class="order-item">
+            <div class="item-info">
+              <h4>{{ item.productName }}</h4>
+              <p>Qty: {{ item.quantity }} × {{ item.unitPrice | currency:'INR':'symbol':'1.0-0' }}</p>
             </div>
-          }
-        </mat-card-content>
-      </mat-card>
+            <div class="item-total">{{ item.subTotal | currency:'INR':'symbol':'1.0-0' }}</div>
+          </div>
+        }
+      </div>
 
-      <!-- Summary & Address -->
+      <!-- Sidebar -->
       <div class="order-aside">
-        <mat-card class="summary-card">
-          <mat-card-content>
-            <h2>Payment Summary</h2>
-            <div class="summary-row"><span>Subtotal</span><span>{{ o.subTotal | currency:'INR':'symbol':'1.0-0' }}</span></div>
-            <div class="summary-row"><span>Shipping</span><span>{{ o.shippingCost | currency:'INR':'symbol':'1.0-0' }}</span></div>
-            <div class="summary-total"><span>Total</span><strong>{{ o.totalAmount | currency:'INR':'symbol':'1.0-0' }}</strong></div>
-          </mat-card-content>
-        </mat-card>
+        <div class="summary-card">
+          <h2>Payment Summary</h2>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>{{ o.subTotal | currency:'INR':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>{{ o.shippingCost | currency:'INR':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="summary-total">
+            <span>Total</span>
+            <strong>{{ o.totalAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
+          </div>
+        </div>
 
-        <mat-card class="address-card">
-          <mat-card-content>
-            <h2>Shipping Address</h2>
-            <p>{{ o.shippingAddress }}</p>
-            @if (o.notes) {
-              <p class="notes"><em>Notes: {{ o.notes }}</em></p>
-            }
-            @if (o.shippedAt) {
-              <p class="shipped-date">Shipped: {{ o.shippedAt | date:'mediumDate' }}</p>
-            }
-            @if (o.deliveredAt) {
-              <p class="delivered-date">Delivered: {{ o.deliveredAt | date:'mediumDate' }}</p>
-            }
-          </mat-card-content>
-        </mat-card>
+        <div class="address-card">
+          <h2>Shipping Address</h2>
+          <p>{{ o.shippingAddress }}</p>
+          @if (o.notes) {
+            <p class="notes"><em>Notes: {{ o.notes }}</em></p>
+          }
+          @if (o.shippedAt) {
+            <p class="shipped-date">
+              <mat-icon style="font-size:14px;width:14px;height:14px;vertical-align:middle">local_shipping</mat-icon>
+              Shipped: {{ o.shippedAt | date:'mediumDate' }}
+            </p>
+          }
+          @if (o.deliveredAt) {
+            <p class="delivered-date">
+              <mat-icon style="font-size:14px;width:14px;height:14px;vertical-align:middle">check_circle</mat-icon>
+              Delivered: {{ o.deliveredAt | date:'mediumDate' }}
+            </p>
+          }
+        </div>
       </div>
     </div>
   </div>
@@ -68,6 +79,6 @@
   <div class="not-found">
     <mat-icon>search_off</mat-icon>
     <h2>Order not found</h2>
-    <a mat-raised-button color="primary" routerLink="/profile">My Orders</a>
+    <a mat-raised-button routerLink="/profile">My Orders</a>
   </div>
 }

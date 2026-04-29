@@ -1,0 +1,19 @@
+@use '../dashboard/admin-dashboard.component.scss' as *;
+
+.new-product-btn {
+  background: var(--kc-primary) !important;
+  color: white !important;
+  border-radius: var(--radius-full) !important;
+  height: 42px !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--sp-1) !important;
+
+  &:hover { background: var(--kc-primary-light) !important; }
+}
+
+.status-1 { background: #e8f5e9 !important; color: #2e7d32 !important; }
+.status-2 { background: #fff3e0 !important; color: #e65100 !important; }
+.status-3 { background: #fce4ec !important; color: #c62828 !important; }

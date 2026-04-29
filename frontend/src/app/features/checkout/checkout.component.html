@@ -4,90 +4,95 @@
   <div class="checkout-layout">
     <!-- Shipping Form -->
     <div class="shipping-section">
-      <mat-card>
-        <mat-card-content>
-          <h2>Shipping Address</h2>
-          <form [formGroup]="shippingForm" class="shipping-form">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Street Address</mat-label>
-              <input matInput formControlName="street" placeholder="123 Main Street">
-              @if (shippingForm.get('street')?.touched && shippingForm.get('street')?.errors?.['required']) {
-                <mat-error>Street address is required</mat-error>
+      <div class="form-card">
+        <h2 class="section-heading">
+          <mat-icon>local_shipping</mat-icon>
+          Shipping Address
+        </h2>
+        <form [formGroup]="shippingForm" class="shipping-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Street Address</mat-label>
+            <input matInput formControlName="street" placeholder="123 Main Street, Apartment 4B">
+            <mat-icon matSuffix>home</mat-icon>
+            @if (shippingForm.get('street')?.touched && shippingForm.get('street')?.errors?.['required']) {
+              <mat-error>Street address is required</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="row-fields">
+            <mat-form-field appearance="outline">
+              <mat-label>City</mat-label>
+              <input matInput formControlName="city">
+              @if (shippingForm.get('city')?.touched && shippingForm.get('city')?.errors?.['required']) {
+                <mat-error>City is required</mat-error>
               }
             </mat-form-field>
-
-            <div class="row-fields">
-              <mat-form-field appearance="outline">
-                <mat-label>City</mat-label>
-                <input matInput formControlName="city">
-                @if (shippingForm.get('city')?.touched && shippingForm.get('city')?.errors?.['required']) {
-                  <mat-error>City is required</mat-error>
-                }
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>State</mat-label>
-                <input matInput formControlName="state">
-                @if (shippingForm.get('state')?.touched && shippingForm.get('state')?.errors?.['required']) {
-                  <mat-error>State is required</mat-error>
-                }
-              </mat-form-field>
-            </div>
-
-            <div class="row-fields">
-              <mat-form-field appearance="outline">
-                <mat-label>Postal Code</mat-label>
-                <input matInput formControlName="postalCode">
-                @if (shippingForm.get('postalCode')?.touched && shippingForm.get('postalCode')?.errors?.['required']) {
-                  <mat-error>Postal code is required</mat-error>
-                }
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Country</mat-label>
-                <input matInput formControlName="country">
-              </mat-form-field>
-            </div>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Order Notes (optional)</mat-label>
-              <textarea matInput formControlName="notes" rows="3" placeholder="Special instructions..."></textarea>
+            <mat-form-field appearance="outline">
+              <mat-label>State</mat-label>
+              <input matInput formControlName="state">
+              @if (shippingForm.get('state')?.touched && shippingForm.get('state')?.errors?.['required']) {
+                <mat-error>State is required</mat-error>
+              }
             </mat-form-field>
-          </form>
-        </mat-card-content>
-      </mat-card>
+          </div>
+
+          <div class="row-fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Postal Code</mat-label>
+              <input matInput formControlName="postalCode">
+              @if (shippingForm.get('postalCode')?.touched && shippingForm.get('postalCode')?.errors?.['required']) {
+                <mat-error>Postal code is required</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Country</mat-label>
+              <input matInput formControlName="country">
+              @if (shippingForm.get('country')?.touched && shippingForm.get('country')?.errors?.['required']) {
+                <mat-error>Country is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Order Notes (optional)</mat-label>
+            <textarea matInput formControlName="notes" rows="3"
+                      placeholder="Special instructions, gift wrapping, etc."></textarea>
+            <mat-icon matSuffix>note_alt</mat-icon>
+          </mat-form-field>
+        </form>
+      </div>
     </div>
 
     <!-- Order Summary -->
     <div class="order-summary">
-      <mat-card class="summary-card">
-        <mat-card-content>
-          <h2>Order Summary</h2>
-          @if (cartService.cart(); as cart) {
-            @for (item of cart.items; track item.productId) {
-              <div class="summary-item">
-                <span>{{ item.productName }} × {{ item.quantity }}</span>
-                <span>{{ item.subTotal | currency:'INR':'symbol':'1.0-0' }}</span>
-              </div>
-            }
-            <div class="summary-divider"></div>
-            <div class="summary-total">
-              <span>Total</span>
-              <strong>{{ cart.total | currency:'INR':'symbol':'1.0-0' }}</strong>
+      <div class="summary-card">
+        <h2>Order Summary</h2>
+        @if (cartService.cart(); as cart) {
+          @for (item of cart.items; track item.productId) {
+            <div class="summary-item">
+              <span>{{ item.productName }} × {{ item.quantity }}</span>
+              <span>{{ item.subTotal | currency:'INR':'symbol':'1.0-0' }}</span>
             </div>
           }
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-raised-button color="primary"
-                  style="width:100%"
-                  [disabled]="submitting()"
-                  (click)="placeOrder()">
-            @if (submitting()) {
-              <mat-spinner diameter="20" style="display:inline-block"></mat-spinner>
-            } @else {
-              Place Order
-            }
-          </button>
-        </mat-card-actions>
-      </mat-card>
+          <div class="summary-total">
+            <span>Total</span>
+            <strong>{{ cart.total | currency:'INR':'symbol':'1.0-0' }}</strong>
+          </div>
+        }
+        <button mat-raised-button class="place-order-btn"
+                [disabled]="submitting()"
+                (click)="placeOrder()">
+          @if (submitting()) {
+            <mat-spinner diameter="22"></mat-spinner>
+            <span>Placing Order...</span>
+          } @else {
+            <ng-container>
+              <mat-icon>shopping_bag</mat-icon>
+              <span>Place Order</span>
+            </ng-container>
+          }
+        </button>
+      </div>
     </div>
   </div>
 </div>
