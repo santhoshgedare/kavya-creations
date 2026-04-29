@@ -1,0 +1,100 @@
+@if (loading) {
+  <div class="detail-skeleton">
+    <div class="skeleton-img"></div>
+    <div class="skeleton-content">
+      <div class="skeleton-line wide"></div>
+      <div class="skeleton-line medium"></div>
+      <div class="skeleton-line short"></div>
+    </div>
+  </div>
+} @else if (notFound || !product) {
+  <div class="not-found">
+    <span>💎</span>
+    <h2>Product Not Found</h2>
+    <p>This jewellery piece is no longer available.</p>
+    <a routerLink="/products" class="btn btn-primary">Browse Collection</a>
+  </div>
+} @else {
+  <div class="detail-page">
+    <div class="breadcrumb">
+      <a routerLink="/">Home</a>
+      <span>/</span>
+      <a routerLink="/products">Jewellery</a>
+      <span>/</span>
+      <a [routerLink]="'/products'" [queryParams]="{category: product.category}">{{ product.category | titlecase }}</a>
+      <span>/</span>
+      <span>{{ product.name }}</span>
+    </div>
+
+    <div class="detail-container">
+      <div class="product-image-section">
+        <img [src]="product.imageUrl" [alt]="product.name" class="product-main-img" />
+      </div>
+
+      <div class="product-info-section">
+        <span class="product-category">{{ product.category | titlecase }}</span>
+        <h1 class="product-name">{{ product.name }}</h1>
+        <p class="product-material">Material: <strong>{{ product.material }}</strong></p>
+        <div class="product-price">₹{{ product.price | number:'1.0-0' }}</div>
+
+        <p class="product-description">{{ product.description }}</p>
+
+        @if (product.isAvailable && product.stockQuantity > 0) {
+          <p class="stock-info">
+            <span class="in-stock">✓ In Stock</span>
+            ({{ product.stockQuantity }} available)
+          </p>
+
+          <div class="quantity-section">
+            <label>Quantity</label>
+            <div class="quantity-control">
+              <button (click)="adjustQuantity(-1)" [disabled]="quantity <= 1">−</button>
+              <span>{{ quantity }}</span>
+              <button (click)="adjustQuantity(1)" [disabled]="quantity >= product.stockQuantity">+</button>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button
+              class="btn btn-primary btn-cart"
+              (click)="addToCart()"
+              [class.added]="added">
+              {{ added ? '✓ Added to Cart!' : '🛒 Add to Cart' }}
+            </button>
+          </div>
+        } @else {
+          <p class="out-of-stock">✕ Out of Stock</p>
+        }
+
+        <div class="product-tags">
+          <span class="tag">Handcrafted</span>
+          <span class="tag">{{ product.category | titlecase }}</span>
+          <span class="tag">{{ product.material }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    @if (relatedProducts.length > 0) {
+      <section class="related-section">
+        <h2>You May Also Like</h2>
+        <div class="related-grid">
+          @for (related of relatedProducts; track related.id) {
+            <div class="related-card">
+              <a [routerLink]="['/products', related.id]" class="related-image">
+                <img [src]="related.imageUrl" [alt]="related.name" loading="lazy" />
+              </a>
+              <div class="related-info">
+                <h4><a [routerLink]="['/products', related.id]">{{ related.name }}</a></h4>
+                <div class="related-footer">
+                  <span>₹{{ related.price | number:'1.0-0' }}</span>
+                  <button class="btn-sm" (click)="addRelatedToCart(related, $event)">Add</button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
+}

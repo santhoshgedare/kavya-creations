@@ -1,0 +1,47 @@
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <div class="brand-logo">
+        <span class="brand-icon">✦</span>
+        <span>Kavya Creations</span>
+      </div>
+      <p>Handcrafted jewellery celebrating the artistry of skilled artisans. Each piece is a labour of love, tradition, and beauty.</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Shop</h4>
+      <ul>
+        <li><a routerLink="/products">All Jewellery</a></li>
+        <li><a routerLink="/products" [queryParams]="{category:'bangles'}">Bangles</a></li>
+        <li><a routerLink="/products" [queryParams]="{category:'earrings'}">Earrings</a></li>
+        <li><a routerLink="/products" [queryParams]="{category:'necklaces'}">Necklaces</a></li>
+        <li><a routerLink="/products" [queryParams]="{category:'accessories'}">Accessories</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-links">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Returns & Exchanges</a></li>
+        <li><a href="#">Shipping Policy</a></li>
+        <li><a href="#">Size Guide</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-contact">
+      <h4>Connect</h4>
+      <p>📧 kavya&#64;kavyacreations.in</p>
+      <p>📱 +91 98765 43210</p>
+      <div class="social-links">
+        <a href="#" class="social-btn">Instagram</a>
+        <a href="#" class="social-btn">Pinterest</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© {{ currentYear }} Kavya Creations. All rights reserved. Made with ❤️ in India.</p>
+  </div>
+</footer>

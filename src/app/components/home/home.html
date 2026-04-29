@@ -1,0 +1,121 @@
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">
+      <span class="hero-subtitle">Handcrafted with Love</span>
+      Kavya Creations
+    </h1>
+    <p class="hero-description">
+      Discover our exquisite collection of handcrafted bangles, earrings, necklaces, and artisanal accessories.
+      Each piece tells a story of tradition, craftsmanship, and beauty.
+    </p>
+    <div class="hero-actions">
+      <a routerLink="/products" class="btn btn-primary">Shop Now</a>
+      <a routerLink="/products" [queryParams]="{category:'bangles'}" class="btn btn-secondary">View Bangles</a>
+    </div>
+  </div>
+  <div class="hero-decoration">
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="ring ring-3"></div>
+    <div class="hero-center">✦</div>
+  </div>
+</section>
+
+<!-- Category Showcase -->
+<section class="categories-section">
+  <div class="section-container">
+    <h2 class="section-title">Shop by Category</h2>
+    <p class="section-subtitle">Explore our curated collections</p>
+    <div class="categories-grid">
+      @for (cat of categories; track cat.id) {
+        <a [routerLink]="'/products'" [queryParams]="{category: cat.slug}" class="category-card">
+          <div class="category-image">
+            <img [src]="cat.imageUrl" [alt]="cat.name" loading="lazy" />
+            <div class="category-overlay"></div>
+          </div>
+          <div class="category-info">
+            <h3>{{ cat.name }}</h3>
+            <p>{{ cat.description }}</p>
+          </div>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="featured-section">
+  <div class="section-container">
+    <h2 class="section-title">Featured Pieces</h2>
+    <p class="section-subtitle">Handpicked favourites from our collection</p>
+
+    @if (loading) {
+      <div class="loading-grid">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="product-card skeleton"></div>
+        }
+      </div>
+    } @else {
+      <div class="products-grid">
+        @for (product of featuredProducts; track product.id) {
+          <div class="product-card">
+            <a [routerLink]="['/products', product.id]" class="product-image-link">
+              <img [src]="product.imageUrl" [alt]="product.name" loading="lazy" />
+              <span class="badge-featured">Featured</span>
+            </a>
+            <div class="product-info">
+              <span class="product-category">{{ product.category }}</span>
+              <h3 class="product-name">
+                <a [routerLink]="['/products', product.id]">{{ product.name }}</a>
+              </h3>
+              <p class="product-material">{{ product.material }}</p>
+              <div class="product-footer">
+                <span class="product-price">₹{{ product.price | number:'1.0-0' }}</span>
+                <button
+                  class="btn-add-cart"
+                  (click)="addToCart(product)"
+                  [class.added]="addedProductId === product.id"
+                  [disabled]="!product.isAvailable">
+                  {{ addedProductId === product.id ? '✓ Added' : 'Add to Cart' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="view-all-cta">
+      <a routerLink="/products" class="btn btn-outline">View All Jewellery</a>
+    </div>
+  </div>
+</section>
+
+<!-- Value Propositions -->
+<section class="values-section">
+  <div class="section-container">
+    <div class="values-grid">
+      <div class="value-item">
+        <span class="value-icon">🤲</span>
+        <h4>Handcrafted</h4>
+        <p>Every piece is lovingly crafted by skilled artisans using traditional techniques.</p>
+      </div>
+      <div class="value-item">
+        <span class="value-icon">✨</span>
+        <h4>Unique Designs</h4>
+        <p>Our designs blend heritage artistry with contemporary aesthetics.</p>
+      </div>
+      <div class="value-item">
+        <span class="value-icon">📦</span>
+        <h4>Gift Ready</h4>
+        <p>All orders come beautifully packaged — perfect for gifting.</p>
+      </div>
+      <div class="value-item">
+        <span class="value-icon">🔄</span>
+        <h4>Easy Returns</h4>
+        <p>7-day hassle-free returns on all jewellery pieces.</p>
+      </div>
+    </div>
+  </div>
+</section>

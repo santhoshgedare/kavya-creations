@@ -1,0 +1,78 @@
+<div class="cart-page">
+  <header class="page-header">
+    <h1>Your Cart</h1>
+    <p>Review your selected jewellery pieces</p>
+  </header>
+
+  <div class="cart-container">
+    @if (checkoutDone) {
+      <div class="order-success">
+        <span>🎉</span>
+        <h2>Order Placed Successfully!</h2>
+        <p>Thank you for shopping with Kavya Creations. Your handcrafted jewellery is being prepared with love.</p>
+        <a routerLink="/products" class="btn btn-primary">Continue Shopping</a>
+      </div>
+    } @else if (cartService.items().length === 0) {
+      <div class="empty-cart">
+        <span>🛒</span>
+        <h2>Your cart is empty</h2>
+        <p>Discover our beautiful collection of handcrafted jewellery.</p>
+        <a routerLink="/products" class="btn btn-primary">Shop Now</a>
+      </div>
+    } @else {
+      <div class="cart-layout">
+        <!-- Items -->
+        <div class="cart-items">
+          <h2>Items ({{ cartService.totalItems() }})</h2>
+          @for (item of cartService.items(); track item.product.id) {
+            <div class="cart-item">
+              <a [routerLink]="['/products', item.product.id]" class="item-image">
+                <img [src]="item.product.imageUrl" [alt]="item.product.name" />
+              </a>
+              <div class="item-details">
+                <span class="item-category">{{ item.product.category | titlecase }}</span>
+                <h3><a [routerLink]="['/products', item.product.id]">{{ item.product.name }}</a></h3>
+                <p class="item-material">{{ item.product.material }}</p>
+                <div class="item-actions">
+                  <div class="qty-control">
+                    <button (click)="updateQty(item, -1)" [disabled]="item.quantity <= 1">−</button>
+                    <span>{{ item.quantity }}</span>
+                    <button (click)="updateQty(item, 1)" [disabled]="item.quantity >= item.product.stockQuantity">+</button>
+                  </div>
+                  <button class="remove-btn" (click)="remove(item.product.id)">Remove</button>
+                </div>
+              </div>
+              <div class="item-price">
+                <span class="unit-price">₹{{ item.product.price | number:'1.0-0' }}</span>
+                @if (item.quantity > 1) {
+                  <span class="total-price">₹{{ (item.product.price * item.quantity) | number:'1.0-0' }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Summary -->
+        <div class="cart-summary">
+          <h2>Order Summary</h2>
+          <div class="summary-row">
+            <span>Subtotal ({{ cartService.totalItems() }} items)</span>
+            <span>₹{{ cartService.totalPrice() | number:'1.0-0' }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span class="free-shipping">Free</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>₹{{ cartService.totalPrice() | number:'1.0-0' }}</span>
+          </div>
+          <button class="btn btn-checkout" (click)="checkout()">
+            Proceed to Checkout
+          </button>
+          <a routerLink="/products" class="continue-link">← Continue Shopping</a>
+        </div>
+      </div>
+    }
+  </div>
+</div>

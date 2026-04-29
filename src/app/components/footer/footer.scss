@@ -1,0 +1,123 @@
+.footer {
+  background: linear-gradient(135deg, #1a0a04 0%, #2c1a0e 100%);
+  color: #d4b896;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 3rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 3rem;
+}
+
+.footer-brand {
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Georgia', serif;
+    font-size: 1.3rem;
+    color: #f5c842;
+    margin-bottom: 1rem;
+
+    .brand-icon { font-size: 1.4rem; }
+  }
+
+  p {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    opacity: 0.8;
+    max-width: 280px;
+  }
+}
+
+.footer-links {
+  h4 {
+    color: #f5c842;
+    font-family: 'Georgia', serif;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  a {
+    color: #d4b896;
+    text-decoration: none;
+    font-size: 0.88rem;
+    opacity: 0.8;
+    transition: opacity 0.2s, color 0.2s;
+
+    &:hover { opacity: 1; color: #f5c842; }
+  }
+}
+
+.footer-contact {
+  h4 {
+    color: #f5c842;
+    font-family: 'Georgia', serif;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  p {
+    font-size: 0.88rem;
+    margin: 0 0 0.5rem;
+    opacity: 0.8;
+  }
+}
+
+.social-links {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  .social-btn {
+    padding: 0.35rem 0.85rem;
+    border: 1px solid rgba(245,200,66,0.4);
+    border-radius: 50px;
+    color: #f5c842;
+    text-decoration: none;
+    font-size: 0.78rem;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(245,200,66,0.12);
+      border-color: #f5c842;
+    }
+  }
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(245,200,66,0.15);
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+
+  p {
+    font-size: 0.82rem;
+    opacity: 0.6;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .footer-brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 480px) {
+  .footer-container { grid-template-columns: 1fr; }
+}
