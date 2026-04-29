@@ -1,0 +1,77 @@
+<div class="cart-page">
+  <h1 class="page-title">Shopping Cart</h1>
+
+  @if (loading) {
+    <div class="loading-center">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  } @else if (!cartService.cart() || cartService.cartItemCount() === 0) {
+    <div class="empty-cart">
+      <mat-icon class="empty-icon">shopping_cart</mat-icon>
+      <h2>Your cart is empty</h2>
+      <p>Discover our beautiful handcrafted jewelry collection.</p>
+      <a mat-raised-button color="primary" routerLink="/products">Shop Now</a>
+    </div>
+  } @else {
+    <div class="cart-layout">
+      <div class="cart-items">
+        @for (item of cartService.cart()!.items; track item.productId) {
+          <mat-card class="cart-item">
+            <div class="item-image-wrap">
+              <img [src]="item.productImageUrl || 'assets/placeholder.jpg'"
+                   [alt]="item.productName"
+                   class="item-image">
+            </div>
+            <div class="item-details">
+              <h3>{{ item.productName }}</h3>
+              <p class="unit-price">{{ item.unitPrice | currency:'INR':'symbol':'1.0-0' }} each</p>
+              <div class="quantity-controls">
+                <button mat-icon-button (click)="updateQuantity(item, item.quantity - 1)">
+                  <mat-icon>remove</mat-icon>
+                </button>
+                <span class="qty">{{ item.quantity }}</span>
+                <button mat-icon-button (click)="updateQuantity(item, item.quantity + 1)">
+                  <mat-icon>add</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="removeItem(item)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+            <div class="item-subtotal">
+              <span>{{ item.subTotal | currency:'INR':'symbol':'1.0-0' }}</span>
+            </div>
+          </mat-card>
+        }
+      </div>
+
+      <div class="cart-summary">
+        <mat-card class="summary-card">
+          <mat-card-content>
+            <h2>Order Summary</h2>
+            <div class="summary-row">
+              <span>Items ({{ cartService.cartItemCount() }})</span>
+              <span>{{ cartService.cartTotal() | currency:'INR':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="summary-row shipping">
+              <span>Shipping</span>
+              <span>Calculated at checkout</span>
+            </div>
+            <div class="summary-total">
+              <span>Total</span>
+              <span>{{ cartService.cartTotal() | currency:'INR':'symbol':'1.0-0' }}</span>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <a mat-raised-button color="primary" routerLink="/checkout" style="width:100%">
+              Proceed to Checkout
+            </a>
+          </mat-card-actions>
+        </mat-card>
+        <a mat-stroked-button routerLink="/products" style="width:100%;margin-top:8px">
+          Continue Shopping
+        </a>
+      </div>
+    </div>
+  }
+</div>

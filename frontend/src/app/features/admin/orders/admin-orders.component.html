@@ -1,0 +1,70 @@
+<div class="admin-page">
+  <h1 class="page-title">Orders</h1>
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner diameter="48"></mat-spinner></div>
+  } @else {
+    <mat-table [dataSource]="orders()" class="admin-table">
+      <ng-container matColumnDef="orderNumber">
+        <mat-header-cell *matHeaderCellDef>Order #</mat-header-cell>
+        <mat-cell *matCellDef="let o">
+          <a [routerLink]="['/orders', o.id]" class="order-link">{{ o.orderNumber }}</a>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="date">
+        <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
+        <mat-cell *matCellDef="let o">{{ o.createdAt | date:'shortDate' }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="items">
+        <mat-header-cell *matHeaderCellDef>Items</mat-header-cell>
+        <mat-cell *matCellDef="let o">{{ o.itemCount }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="total">
+        <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
+        <mat-cell *matCellDef="let o">{{ o.totalAmount | currency:'INR':'symbol':'1.0-0' }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="paymentStatus">
+        <mat-header-cell *matHeaderCellDef>Payment</mat-header-cell>
+        <mat-cell *matCellDef="let o">
+          <mat-chip>{{ getPaymentLabel(o.paymentStatus) }}</mat-chip>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+        <mat-cell *matCellDef="let o">
+          <mat-chip>{{ getStatusLabel(o.status) }}</mat-chip>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Update Status</mat-header-cell>
+        <mat-cell *matCellDef="let o">
+          <mat-select [value]="o.status"
+                      (selectionChange)="updateStatus(o, $event.value)"
+                      style="width:140px">
+            @for (s of orderStatuses; track s.value) {
+              <mat-option [value]="s.value">{{ s.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+    <mat-paginator
+      [length]="totalCount()"
+      [pageSize]="pageSize"
+      [pageIndex]="page() - 1"
+      [pageSizeOptions]="[20, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  }
+</div>

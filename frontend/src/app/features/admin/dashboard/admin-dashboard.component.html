@@ -1,0 +1,52 @@
+<div class="admin-page">
+  <h1 class="page-title">Admin Dashboard</h1>
+
+  @if (loading()) {
+    <div class="loading-center">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  } @else {
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <mat-icon class="stat-icon">receipt_long</mat-icon>
+          <div class="stat-value">{{ totalOrders() }}</div>
+          <div class="stat-label">Total Orders</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <mat-icon class="stat-icon">diamond</mat-icon>
+          <div class="stat-value">{{ totalProducts() }}</div>
+          <div class="stat-label">Total Products</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="quick-links">
+      <a mat-raised-button color="primary" routerLink="/admin/products">
+        <mat-icon>inventory</mat-icon> Manage Products
+      </a>
+      <a mat-raised-button color="accent" routerLink="/admin/orders">
+        <mat-icon>local_shipping</mat-icon> Manage Orders
+      </a>
+    </div>
+
+    @if (recentOrders().length > 0) {
+      <mat-card class="recent-orders">
+        <mat-card-content>
+          <h2>Recent Orders</h2>
+          @for (order of recentOrders(); track order.id) {
+            <div class="order-row" [routerLink]="['/orders', order.id]">
+              <span class="order-num">{{ order.orderNumber }}</span>
+              <span class="order-date">{{ order.createdAt | date:'shortDate' }}</span>
+              <span class="order-items">{{ order.itemCount }} items</span>
+              <span class="order-total">{{ order.totalAmount | currency:'INR':'symbol':'1.0-0' }}</span>
+            </div>
+          }
+          <a mat-button routerLink="/admin/orders" style="margin-top:8px">View All Orders →</a>
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+</div>
