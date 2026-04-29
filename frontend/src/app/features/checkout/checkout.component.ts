@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CartService } from '../../core/services/cart.service';
@@ -14,7 +15,7 @@ import { OrderService } from '../../core/services/order.service';
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CurrencyPipe, ReactiveFormsModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule],
+  imports: [CurrencyPipe, ReactiveFormsModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',
 })

@@ -1,32 +1,97 @@
-<!-- Hero Section -->
+<!-- ─── Hero Section ──────────────────────────────────────────────────────── -->
 <section class="hero">
-  <div class="hero-content">
-    <h1 class="hero-title">Handcrafted Jewelry</h1>
-    <p class="hero-subtitle">Every piece tells a story — crafted with passion, worn with love.</p>
-    <a mat-raised-button color="primary" routerLink="/products" class="hero-cta">Shop Now</a>
+  <div class="hero__overlay"></div>
+  <div class="hero__content container">
+    <div class="hero__badge">New Collection 2026</div>
+    <h1 class="hero__title">
+      Handcrafted<br>
+      <em>Jewelry</em> for<br>
+      Every Story
+    </h1>
+    <p class="hero__subtitle">
+      Each piece is lovingly crafted by hand — unique, soulful, and made to be treasured forever.
+    </p>
+    <div class="hero__actions">
+      <a mat-raised-button class="hero__cta-primary" routerLink="/products">
+        Explore Collection
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+      <a mat-stroked-button class="hero__cta-secondary" routerLink="/products">
+        View Lookbook
+      </a>
+    </div>
+  </div>
+  <div class="hero__scroll-hint">
+    <mat-icon>keyboard_arrow_down</mat-icon>
   </div>
 </section>
 
-<!-- Featured Products -->
-<section class="section">
+<!-- ─── Trust Bar ─────────────────────────────────────────────────────────── -->
+<section class="trust-bar">
   <div class="container">
-    <h2 class="section-title">Featured Pieces</h2>
+    <div class="trust-bar__items">
+      @for (item of trustItems; track item.icon) {
+        <div class="trust-bar__item">
+          <mat-icon class="trust-bar__icon">{{ item.icon }}</mat-icon>
+          <span class="trust-bar__text">{{ item.text }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ─── Featured Products ─────────────────────────────────────────────────── -->
+<section class="section featured-section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Featured Pieces</h2>
+        <p class="section-subtitle">Curated selections from our artisan collection</p>
+      </div>
+      <a mat-stroked-button class="section-header__link" routerLink="/products">
+        View All <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+
     @if (loading()) {
-      <div class="loading-center">
-        <mat-spinner diameter="48"></mat-spinner>
+      <div class="products-grid">
+        @for (i of [1,2,3,4]; track i) {
+          <div class="product-card product-card--skeleton">
+            <div class="product-card__image-skeleton"></div>
+            <div class="product-card__body">
+              <div class="skeleton-line skeleton-line--wide"></div>
+              <div class="skeleton-line skeleton-line--narrow"></div>
+            </div>
+          </div>
+        }
       </div>
     } @else {
       <div class="products-grid">
         @for (product of featuredProducts(); track product.id) {
-          <mat-card class="product-card">
-            <img mat-card-image
-                 [src]="product.primaryImageUrl || 'assets/placeholder.jpg'"
-                 [alt]="product.name"
-                 class="product-img">
-            <mat-card-content>
-              <h3 class="product-name">{{ product.name }}</h3>
-              <p class="product-cat">{{ product.categoryName }}</p>
-              <div class="product-price">
+          <article class="product-card" [routerLink]="['/products', product.slug]">
+            <div class="product-card__image-wrap">
+              <img class="product-card__image"
+                   [src]="product.primaryImageUrl || 'assets/placeholder.jpg'"
+                   [alt]="product.name"
+                   loading="lazy">
+              <div class="product-card__overlay">
+                <a mat-raised-button class="product-card__quick-view"
+                   [routerLink]="['/products', product.slug]"
+                   (click)="$event.stopPropagation()">
+                  View Details
+                </a>
+              </div>
+              @if (product.discountPrice) {
+                <span class="product-card__badge">SALE</span>
+              }
+              @if (product.stockQuantity === 0) {
+                <span class="product-card__badge product-card__badge--sold">Sold Out</span>
+              }
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__category">{{ product.categoryName }}</p>
+              <h3 class="product-card__name">{{ product.name }}</h3>
+              <div class="product-card__price-row">
                 @if (product.discountPrice) {
                   <span class="price-original">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
                   <span class="price-discounted">{{ product.discountPrice | currency:'INR':'symbol':'1.0-0' }}</span>
@@ -34,43 +99,82 @@
                   <span class="price">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
                 }
               </div>
-            </mat-card-content>
-            <mat-card-actions>
-              <a mat-button color="primary" [routerLink]="['/products', product.slug]">View Details</a>
-              <button mat-raised-button color="accent" (click)="addToCart(product.id)"
-                      [disabled]="product.stockQuantity === 0">
+              <button mat-raised-button class="product-card__cart-btn"
+                      [disabled]="product.stockQuantity === 0"
+                      (click)="addToCart(product.id); $event.stopPropagation()">
+                <mat-icon>shopping_bag</mat-icon>
                 {{ product.stockQuantity === 0 ? 'Sold Out' : 'Add to Cart' }}
               </button>
-            </mat-card-actions>
-          </mat-card>
+            </div>
+          </article>
         }
         @empty {
-          <p class="empty-msg">No featured products available.</p>
+          <div class="empty-state" style="grid-column: 1/-1">
+            <mat-icon>diamond</mat-icon>
+            <p>No featured products available yet.</p>
+          </div>
         }
-      </div>
-      <div class="view-all">
-        <a mat-stroked-button color="primary" routerLink="/products">View All Products</a>
       </div>
     }
   </div>
 </section>
 
-<!-- Categories -->
-<section class="section categories-section">
+<!-- ─── Categories ────────────────────────────────────────────────────────── -->
+@if (categories().length > 0) {
+  <section class="section categories-section">
+    <div class="container">
+      <h2 class="section-title">Shop by Category</h2>
+      <p class="section-subtitle">Discover our curated jewelry collections</p>
+      <div class="categories-grid">
+        @for (cat of categories(); track cat.id) {
+          <a class="category-card"
+             [routerLink]="['/products']"
+             [queryParams]="{category: cat.slug}">
+            <div class="category-card__image-wrap">
+              <img class="category-card__image"
+                   [src]="cat.imageUrl || 'assets/placeholder.jpg'"
+                   [alt]="cat.name"
+                   loading="lazy">
+              <div class="category-card__overlay"></div>
+            </div>
+            <div class="category-card__info">
+              <h3 class="category-card__name">{{ cat.name }}</h3>
+              <span class="category-card__count">{{ cat.productCount }} pieces</span>
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ─── Brand Story ───────────────────────────────────────────────────────── -->
+<section class="brand-story section">
   <div class="container">
-    <h2 class="section-title">Shop by Category</h2>
-    <div class="categories-grid">
-      @for (cat of categories(); track cat.id) {
-        <a class="category-card" [routerLink]="['/products']" [queryParams]="{category: cat.slug}">
-          <div class="category-img-wrap">
-            <img [src]="cat.imageUrl || 'assets/placeholder.jpg'" [alt]="cat.name" class="category-img">
-          </div>
-          <div class="category-info">
-            <h3>{{ cat.name }}</h3>
-            <span>{{ cat.productCount }} items</span>
-          </div>
-        </a>
-      }
+    <div class="row align-items-center g-5">
+      <div class="col-12 col-md-6">
+        <div class="brand-story__image-wrap">
+          <img src="assets/placeholder.jpg" alt="Artisan crafting jewelry" class="brand-story__image">
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="brand-story__content">
+          <span class="brand-story__label">Our Story</span>
+          <h2 class="section-title">Crafted with Passion,<br>Worn with Love</h2>
+          <p class="brand-story__text">
+            Kavya Creations was born from a deep love for the art of jewelry making.
+            Every piece is handcrafted by skilled artisans using traditional techniques
+            passed down through generations.
+          </p>
+          <p class="brand-story__text">
+            We believe jewelry is more than an accessory — it's a story, a memory,
+            a piece of the soul made tangible.
+          </p>
+          <a mat-raised-button class="brand-story__cta" routerLink="/products">
+            Discover Our Collection
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </section>

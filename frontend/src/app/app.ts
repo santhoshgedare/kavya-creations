@@ -17,7 +17,7 @@ import { CartService } from './core/services/cart.service';
   `,
   styles: [`
     .main-content {
-      min-height: calc(100vh - 64px - 200px);
+      min-height: calc(100vh - var(--navbar-height, 68px) - 260px);
     }
   `]
 })

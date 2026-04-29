@@ -1,60 +1,72 @@
 <div class="product-list-page">
   <!-- Filters Sidebar -->
-  <aside class="filters-sidebar" [formGroup]="filterForm">
-    <h3>Filters</h3>
+  <aside class="filters-sidebar">
+    <div class="filters-card" [formGroup]="filterForm">
+      <div class="filters-card__title">
+        <h3>Filters</h3>
+        <button class="filters-card__reset" (click)="resetFilters()" type="button">Reset</button>
+      </div>
 
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Search</mat-label>
-      <input matInput formControlName="search" placeholder="Search jewelry...">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
+      <div class="filter-section">
+        <span class="filter-section__label">Search</span>
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Search jewelry...</mat-label>
+          <input matInput formControlName="search">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
 
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Category</mat-label>
-      <mat-select formControlName="category">
-        <mat-option value="">All Categories</mat-option>
-        @for (cat of categories(); track cat.id) {
-          <mat-option [value]="cat.slug">{{ cat.name }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+      <div class="filter-section">
+        <span class="filter-section__label">Category</span>
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>All Categories</mat-label>
+          <mat-select formControlName="category">
+            <mat-option value="">All Categories</mat-option>
+            @for (cat of categories(); track cat.id) {
+              <mat-option [value]="cat.slug">{{ cat.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-    <div class="price-range">
-      <mat-form-field appearance="outline" class="filter-field half">
-        <mat-label>Min Price</mat-label>
-        <input matInput type="number" formControlName="minPrice" placeholder="₹0">
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="filter-field half">
-        <mat-label>Max Price</mat-label>
-        <input matInput type="number" formControlName="maxPrice" placeholder="₹99999">
-      </mat-form-field>
+      <div class="filter-section">
+        <span class="filter-section__label">Price Range</span>
+        <div class="price-range">
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Min ₹</mat-label>
+            <input matInput type="number" formControlName="minPrice">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Max ₹</mat-label>
+            <input matInput type="number" formControlName="maxPrice">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <span class="filter-section__label">Sort By</span>
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-select formControlName="sortBy">
+            <mat-option value="createdAt">Newest First</mat-option>
+            <mat-option value="effectivePrice">By Price</mat-option>
+            <mat-option value="name">By Name</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-select formControlName="sortDir">
+            <mat-option value="desc">High to Low / Newest</mat-option>
+            <mat-option value="asc">Low to High / Oldest</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
     </div>
-
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Sort By</mat-label>
-      <mat-select formControlName="sortBy">
-        <mat-option value="createdAt">Newest</mat-option>
-        <mat-option value="effectivePrice">Price</mat-option>
-        <mat-option value="name">Name</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Direction</mat-label>
-      <mat-select formControlName="sortDir">
-        <mat-option value="desc">Descending</mat-option>
-        <mat-option value="asc">Ascending</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <button mat-stroked-button (click)="resetFilters()" style="width:100%">Reset Filters</button>
   </aside>
 
-  <!-- Products Grid -->
+  <!-- Products Main -->
   <main class="products-main">
     <div class="products-header">
       <h2>Our Collection</h2>
-      <span class="count">{{ totalCount() }} products</span>
+      <span class="count">{{ totalCount() }} products found</span>
     </div>
 
     @if (loading()) {
@@ -64,30 +76,37 @@
     } @else {
       <div class="products-grid">
         @for (product of products(); track product.id) {
-          <mat-card class="product-card">
-            <img mat-card-image
-                 [src]="product.primaryImageUrl || 'assets/placeholder.jpg'"
-                 [alt]="product.name" class="product-img">
-            <mat-card-content>
-              <h3 class="product-name">{{ product.name }}</h3>
-              <p class="product-cat">{{ product.categoryName }}</p>
-              <p class="product-desc">{{ product.shortDescription }}</p>
-              <div class="product-price">
+          <article class="product-card">
+            <div class="product-card__image-wrap"
+                 [routerLink]="['/products', product.slug]">
+              <img class="product-card__image"
+                   [src]="product.primaryImageUrl || 'assets/placeholder.jpg'"
+                   [alt]="product.name" loading="lazy">
+              @if (product.discountPrice) {
+                <span class="product-card__badge">SALE</span>
+              }
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__category">{{ product.categoryName }}</p>
+              <h3 class="product-card__name">{{ product.name }}</h3>
+              <p class="product-card__desc">{{ product.shortDescription }}</p>
+              <div class="product-card__price-row">
                 <span class="price">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
                 @if (product.discountPrice) {
-                  <span class="price-badge">SALE</span>
+                  <span class="sale-badge">SALE</span>
                 }
               </div>
-            </mat-card-content>
-            <mat-card-actions>
-              <a mat-button color="primary" [routerLink]="['/products', product.slug]">Details</a>
-              <button mat-raised-button color="accent"
+            </div>
+            <div class="product-card__actions">
+              <a class="product-card__btn-details" mat-stroked-button
+                 [routerLink]="['/products', product.slug]">Details</a>
+              <button class="product-card__btn-cart" mat-raised-button
                       (click)="addToCart(product.id)"
                       [disabled]="product.stockQuantity === 0">
                 {{ product.stockQuantity === 0 ? 'Sold Out' : 'Add to Cart' }}
               </button>
-            </mat-card-actions>
-          </mat-card>
+            </div>
+          </article>
         }
         @empty {
           <div class="empty-state">

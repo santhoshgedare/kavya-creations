@@ -19,7 +19,7 @@ function passwordMatch(control: AbstractControl) {
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, MatCardModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [RouterLink, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
 })

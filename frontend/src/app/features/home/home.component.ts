@@ -4,6 +4,7 @@ import { CurrencyPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
@@ -13,7 +14,7 @@ import { ProductListItem, Category } from '../../core/models/product.model';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, MatButtonModule, MatCardModule, MatProgressSpinnerModule],
+  imports: [RouterLink, CurrencyPipe, MatButtonModule, MatCardModule, MatProgressSpinnerModule, MatIconModule],
   templateUrl: './home.component.html',
   styleUrl: './home.scss',
 })
@@ -26,6 +27,13 @@ export class HomeComponent implements OnInit {
   loading = signal(true);
   featuredProducts = signal<ProductListItem[]>([]);
   categories = signal<Category[]>([]);
+
+  readonly trustItems = [
+    { icon: 'verified', text: '100% Handcrafted' },
+    { icon: 'local_shipping', text: 'Free Shipping ₹999+' },
+    { icon: 'replay', text: 'Easy Returns' },
+    { icon: 'support_agent', text: '24/7 Support' },
+  ];
 
   ngOnInit(): void {
     this.productService.getFeaturedProducts().subscribe({

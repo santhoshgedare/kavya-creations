@@ -1,21 +1,34 @@
 @if (loading()) {
-  <div class="loading-center">
-    <mat-spinner diameter="64"></mat-spinner>
+  <div class="loading-center" style="min-height:60vh">
+    <mat-spinner diameter="56"></mat-spinner>
   </div>
 } @else if (product(); as p) {
-  <div class="product-detail-page">
+  <div class="detail-page-wrap">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a>
+      <mat-icon>chevron_right</mat-icon>
+      <a routerLink="/products">Collections</a>
+      <mat-icon>chevron_right</mat-icon>
+      <span class="breadcrumb__current">{{ p.name }}</span>
+    </nav>
+
+    <!-- Main Product Area -->
     <div class="product-main">
-      <!-- Image Gallery -->
+      <!-- Gallery -->
       <div class="gallery">
-        <img class="main-image" [src]="selectedImage() || 'assets/placeholder.jpg'" [alt]="p.name">
+        <div class="gallery__main-wrap">
+          <img class="gallery__main-image"
+               [src]="selectedImage() || 'assets/placeholder.jpg'"
+               [alt]="p.name">
+        </div>
         @if (p.images.length > 1) {
-          <div class="thumbnails">
+          <div class="gallery__thumbnails">
             @for (img of p.images; track img.id) {
-              <img class="thumb"
-                   [src]="img.url"
-                   [alt]="img.altText || p.name"
-                   [class.active]="selectedImage() === img.url"
+              <div class="gallery__thumb" [class.gallery__thumb--active]="selectedImage() === img.url"
                    (click)="selectedImage.set(img.url)">
+                <img [src]="img.url" [alt]="img.altText || p.name">
+              </div>
             }
           </div>
         }
@@ -23,57 +36,85 @@
 
       <!-- Product Info -->
       <div class="product-info">
-        <p class="category-label">{{ p.categoryName }}</p>
-        <h1 class="product-name">{{ p.name }}</h1>
+        <p class="product-info__category">
+          <mat-icon style="font-size:12px;width:12px;height:12px">diamond</mat-icon>
+          {{ p.categoryName }}
+        </p>
 
-        <div class="price-section">
-          <span class="price">{{ p.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
+        <h1 class="product-info__name">{{ p.name }}</h1>
+
+        <div class="product-info__price">
           @if (p.discountPrice) {
-            <span class="original-price">{{ p.price | currency:'INR':'symbol':'1.0-0' }}</span>
-            <span class="discount-badge">SALE</span>
+            <span class="price-original">{{ p.price | currency:'INR':'symbol':'1.0-0' }}</span>
+            <span class="price-discounted">{{ p.discountPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+            <span class="sale-badge">SALE</span>
+          } @else {
+            <span class="price">{{ p.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
           }
         </div>
 
-        <p class="description">{{ p.description }}</p>
+        <p class="product-info__description">{{ p.description }}</p>
 
-        <div class="details-grid">
+        <div class="product-info__details">
           @if (p.material) {
-            <div class="detail-item"><span class="detail-label">Material</span><span>{{ p.material }}</span></div>
+            <div class="detail-item">
+              <span class="detail-label">Material</span>
+              <span class="detail-value">{{ p.material }}</span>
+            </div>
           }
           @if (p.weight) {
-            <div class="detail-item"><span class="detail-label">Weight</span><span>{{ p.weight }}</span></div>
+            <div class="detail-item">
+              <span class="detail-label">Weight</span>
+              <span class="detail-value">{{ p.weight }}</span>
+            </div>
           }
           @if (p.dimensions) {
-            <div class="detail-item"><span class="detail-label">Dimensions</span><span>{{ p.dimensions }}</span></div>
+            <div class="detail-item">
+              <span class="detail-label">Dimensions</span>
+              <span class="detail-value">{{ p.dimensions }}</span>
+            </div>
           }
           <div class="detail-item">
             <span class="detail-label">Availability</span>
-            <span [class]="p.stockQuantity > 0 ? 'in-stock' : 'out-of-stock'">
+            <span class="detail-value"
+                  [class.in-stock]="p.stockQuantity > 0"
+                  [class.out-of-stock]="p.stockQuantity === 0">
               {{ p.stockQuantity > 0 ? 'In Stock (' + p.stockQuantity + ')' : 'Out of Stock' }}
             </span>
           </div>
         </div>
 
         @if (p.stockQuantity > 0) {
-          <div class="quantity-selector">
-            <button mat-icon-button (click)="adjustQuantity(-1)" [disabled]="quantity() <= 1">
-              <mat-icon>remove</mat-icon>
-            </button>
-            <span class="qty-display">{{ quantity() }}</span>
-            <button mat-icon-button (click)="adjustQuantity(1)" [disabled]="quantity() >= p.stockQuantity">
-              <mat-icon>add</mat-icon>
-            </button>
+          <div class="quantity-wrap">
+            <span class="quantity-label">Quantity</span>
+            <div class="quantity-selector">
+              <button mat-icon-button class="qty-btn"
+                      (click)="adjustQuantity(-1)"
+                      [disabled]="quantity() <= 1"
+                      aria-label="Decrease quantity">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="qty-display">{{ quantity() }}</span>
+              <button mat-icon-button class="qty-btn"
+                      (click)="adjustQuantity(1)"
+                      [disabled]="quantity() >= p.stockQuantity"
+                      aria-label="Increase quantity">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
           </div>
         }
 
         <div class="action-buttons">
-          <button mat-raised-button color="primary" class="add-cart-btn"
+          <button mat-raised-button class="add-cart-btn"
                   (click)="addToCart()"
                   [disabled]="p.stockQuantity === 0">
-            <mat-icon>shopping_cart</mat-icon>
+            <mat-icon>shopping_bag</mat-icon>
             {{ p.stockQuantity === 0 ? 'Out of Stock' : 'Add to Cart' }}
           </button>
-          <a mat-stroked-button routerLink="/cart">View Cart</a>
+          <a mat-stroked-button class="view-cart-btn" routerLink="/cart">
+            View Cart
+          </a>
         </div>
       </div>
     </div>
@@ -84,16 +125,19 @@
         <h2>You May Also Like</h2>
         <div class="related-grid">
           @for (rp of relatedProducts(); track rp.id) {
-            <mat-card class="related-card">
-              <img mat-card-image [src]="rp.primaryImageUrl || 'assets/placeholder.jpg'" [alt]="rp.name">
-              <mat-card-content>
-                <h4>{{ rp.name }}</h4>
-                <span>{{ rp.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
-              </mat-card-content>
-              <mat-card-actions>
-                <a mat-button [routerLink]="['/products', rp.slug]">View</a>
-              </mat-card-actions>
-            </mat-card>
+            <a class="related-card" [routerLink]="['/products', rp.slug]">
+              <div class="related-card__image-wrap">
+                <img class="related-card__image"
+                     [src]="rp.primaryImageUrl || 'assets/placeholder.jpg'"
+                     [alt]="rp.name" loading="lazy">
+              </div>
+              <div class="related-card__body">
+                <h4 class="related-card__name">{{ rp.name }}</h4>
+                <span class="related-card__price">{{ rp.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+              <a mat-raised-button class="related-card__btn"
+                 [routerLink]="['/products', rp.slug]">View</a>
+            </a>
           }
         </div>
       </section>
@@ -103,6 +147,6 @@
   <div class="not-found">
     <mat-icon>search_off</mat-icon>
     <h2>Product not found</h2>
-    <a mat-raised-button color="primary" routerLink="/products">Browse Products</a>
+    <a mat-raised-button routerLink="/products">Browse Collections</a>
   </div>
 }
