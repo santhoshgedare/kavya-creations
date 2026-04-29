@@ -5,8 +5,4 @@
     <Project Path="src/KavyaCreations.Domain/KavyaCreations.Domain.csproj" />
     <Project Path="src/KavyaCreations.Infrastructure/KavyaCreations.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/KavyaCreations.IntegrationTests/KavyaCreations.IntegrationTests.csproj" />
-    <Project Path="tests/KavyaCreations.UnitTests/KavyaCreations.UnitTests.csproj" />
-  </Folder>
 </Solution>

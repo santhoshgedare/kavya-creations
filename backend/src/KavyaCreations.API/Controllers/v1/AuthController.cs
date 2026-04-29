@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using KavyaCreations.Application.Features.Auth.Commands;
 using KavyaCreations.Application.Features.Auth.DTOs;
+using KavyaCreations.Application.Features.Auth.Queries;
 using KavyaCreations.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -58,9 +59,7 @@ public sealed class AuthController(ISender mediator, ICurrentUserService current
     [ProducesResponseType<UserProfileDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetProfile(CancellationToken ct)
     {
-        var userId = currentUser.UserId!.Value;
-        var result = await mediator.Send(new UpdateProfileCommand(
-            new UpdateProfileRequest("", "", null), userId), ct);
+        var result = await mediator.Send(new GetProfileQuery(currentUser.UserId!.Value), ct);
         return Ok(result);
     }
 

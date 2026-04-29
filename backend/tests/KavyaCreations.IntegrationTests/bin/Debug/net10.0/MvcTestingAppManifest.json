@@ -1,6 +1,0 @@
-{
-  "KavyaCreations.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/runner\/work\/kavya-creations\/kavya-creations\/backend\/src\/KavyaCreations.API",
-  "KavyaCreations.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/runner\/work\/kavya-creations\/kavya-creations\/backend\/src\/KavyaCreations.Application",
-  "KavyaCreations.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/runner\/work\/kavya-creations\/kavya-creations\/backend\/src\/KavyaCreations.Domain",
-  "KavyaCreations.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/runner\/work\/kavya-creations\/kavya-creations\/backend\/src\/KavyaCreations.Infrastructure"
-}

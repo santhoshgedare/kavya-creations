@@ -105,5 +105,5 @@ public class Order : BaseEntity
     }
 
     private static string GenerateOrderNumber() =>
-        $"KC-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..6].ToUpperInvariant()}";
+        $"KC-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..10].ToUpperInvariant()}";
 }
