@@ -1,6 +1,0 @@
-@KavyaCreations.API_HostAddress = http://localhost:5225
-
-GET {{KavyaCreations.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
