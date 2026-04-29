@@ -1,0 +1,110 @@
+<div class="product-list-page">
+  <!-- Filters Sidebar -->
+  <aside class="filters-sidebar" [formGroup]="filterForm">
+    <h3>Filters</h3>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Search</mat-label>
+      <input matInput formControlName="search" placeholder="Search jewelry...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="category">
+        <mat-option value="">All Categories</mat-option>
+        @for (cat of categories(); track cat.id) {
+          <mat-option [value]="cat.slug">{{ cat.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="price-range">
+      <mat-form-field appearance="outline" class="filter-field half">
+        <mat-label>Min Price</mat-label>
+        <input matInput type="number" formControlName="minPrice" placeholder="₹0">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="filter-field half">
+        <mat-label>Max Price</mat-label>
+        <input matInput type="number" formControlName="maxPrice" placeholder="₹99999">
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Sort By</mat-label>
+      <mat-select formControlName="sortBy">
+        <mat-option value="createdAt">Newest</mat-option>
+        <mat-option value="effectivePrice">Price</mat-option>
+        <mat-option value="name">Name</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Direction</mat-label>
+      <mat-select formControlName="sortDir">
+        <mat-option value="desc">Descending</mat-option>
+        <mat-option value="asc">Ascending</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button (click)="resetFilters()" style="width:100%">Reset Filters</button>
+  </aside>
+
+  <!-- Products Grid -->
+  <main class="products-main">
+    <div class="products-header">
+      <h2>Our Collection</h2>
+      <span class="count">{{ totalCount() }} products</span>
+    </div>
+
+    @if (loading()) {
+      <div class="loading-center">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+    } @else {
+      <div class="products-grid">
+        @for (product of products(); track product.id) {
+          <mat-card class="product-card">
+            <img mat-card-image
+                 [src]="product.primaryImageUrl || 'assets/placeholder.jpg'"
+                 [alt]="product.name" class="product-img">
+            <mat-card-content>
+              <h3 class="product-name">{{ product.name }}</h3>
+              <p class="product-cat">{{ product.categoryName }}</p>
+              <p class="product-desc">{{ product.shortDescription }}</p>
+              <div class="product-price">
+                <span class="price">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                @if (product.discountPrice) {
+                  <span class="price-badge">SALE</span>
+                }
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <a mat-button color="primary" [routerLink]="['/products', product.slug]">Details</a>
+              <button mat-raised-button color="accent"
+                      (click)="addToCart(product.id)"
+                      [disabled]="product.stockQuantity === 0">
+                {{ product.stockQuantity === 0 ? 'Sold Out' : 'Add to Cart' }}
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+        @empty {
+          <div class="empty-state">
+            <mat-icon>search_off</mat-icon>
+            <p>No products found. Try adjusting your filters.</p>
+          </div>
+        }
+      </div>
+
+      <mat-paginator
+        [length]="totalCount()"
+        [pageSize]="pageSize"
+        [pageIndex]="page() - 1"
+        [pageSizeOptions]="[12, 24, 48]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  </main>
+</div>

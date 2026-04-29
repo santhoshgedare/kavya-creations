@@ -1,0 +1,89 @@
+<div class="profile-page">
+  <div class="profile-layout">
+    <!-- Profile Form -->
+    <div class="profile-section">
+      <mat-card>
+        <mat-card-content>
+          <h2>My Profile</h2>
+          @if (authService.currentUser(); as user) {
+            <div class="user-info">
+              <div class="avatar">
+                @if (user.profileImageUrl) {
+                  <img [src]="user.profileImageUrl" [alt]="user.firstName" class="avatar-img">
+                } @else {
+                  <div class="avatar-placeholder">{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</div>
+                }
+              </div>
+              <div>
+                <h3>{{ user.firstName }} {{ user.lastName }}</h3>
+                <p>{{ user.email }}</p>
+              </div>
+            </div>
+          }
+
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
+            <div class="row-fields">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName">
+                @if (profileForm.get('firstName')?.touched && profileForm.get('firstName')?.errors?.['required']) {
+                  <mat-error>First name is required</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName">
+                @if (profileForm.get('lastName')?.touched && profileForm.get('lastName')?.errors?.['required']) {
+                  <mat-error>Last name is required</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Profile Image URL</mat-label>
+              <input matInput formControlName="profileImageUrl" placeholder="https://...">
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+              @if (saving()) {
+                <mat-spinner diameter="20" style="display:inline-block"></mat-spinner>
+              } @else {
+                Save Changes
+              }
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Order History -->
+    <div class="orders-section">
+      <mat-card>
+        <mat-card-content>
+          <h2>Order History</h2>
+          @if (ordersLoading()) {
+            <mat-spinner diameter="36"></mat-spinner>
+          } @else if (orders().length === 0) {
+            <div class="empty-orders">
+              <p>You haven't placed any orders yet.</p>
+              <a mat-raised-button color="primary" routerLink="/products">Shop Now</a>
+            </div>
+          } @else {
+            @for (order of orders(); track order.id) {
+              <div class="order-row" [routerLink]="['/orders', order.id]">
+                <div class="order-main-info">
+                  <span class="order-number">{{ order.orderNumber }}</span>
+                  <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
+                </div>
+                <div class="order-meta">
+                  <mat-chip-set>
+                    <mat-chip>{{ getStatusLabel(order.status) }}</mat-chip>
+                  </mat-chip-set>
+                  <span class="order-total">{{ order.totalAmount | currency:'INR':'symbol':'1.0-0' }}</span>
+                </div>
+              </div>
+            }
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">Handcrafted Jewelry</h1>
+    <p class="hero-subtitle">Every piece tells a story — crafted with passion, worn with love.</p>
+    <a mat-raised-button color="primary" routerLink="/products" class="hero-cta">Shop Now</a>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Featured Pieces</h2>
+    @if (loading()) {
+      <div class="loading-center">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+    } @else {
+      <div class="products-grid">
+        @for (product of featuredProducts(); track product.id) {
+          <mat-card class="product-card">
+            <img mat-card-image
+                 [src]="product.primaryImageUrl || 'assets/placeholder.jpg'"
+                 [alt]="product.name"
+                 class="product-img">
+            <mat-card-content>
+              <h3 class="product-name">{{ product.name }}</h3>
+              <p class="product-cat">{{ product.categoryName }}</p>
+              <div class="product-price">
+                @if (product.discountPrice) {
+                  <span class="price-original">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                  <span class="price-discounted">{{ product.discountPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                } @else {
+                  <span class="price">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                }
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <a mat-button color="primary" [routerLink]="['/products', product.slug]">View Details</a>
+              <button mat-raised-button color="accent" (click)="addToCart(product.id)"
+                      [disabled]="product.stockQuantity === 0">
+                {{ product.stockQuantity === 0 ? 'Sold Out' : 'Add to Cart' }}
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+        @empty {
+          <p class="empty-msg">No featured products available.</p>
+        }
+      </div>
+      <div class="view-all">
+        <a mat-stroked-button color="primary" routerLink="/products">View All Products</a>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Categories -->
+<section class="section categories-section">
+  <div class="container">
+    <h2 class="section-title">Shop by Category</h2>
+    <div class="categories-grid">
+      @for (cat of categories(); track cat.id) {
+        <a class="category-card" [routerLink]="['/products']" [queryParams]="{category: cat.slug}">
+          <div class="category-img-wrap">
+            <img [src]="cat.imageUrl || 'assets/placeholder.jpg'" [alt]="cat.name" class="category-img">
+          </div>
+          <div class="category-info">
+            <h3>{{ cat.name }}</h3>
+            <span>{{ cat.productCount }} items</span>
+          </div>
+        </a>
+      }
+    </div>
+  </div>
+</section>
