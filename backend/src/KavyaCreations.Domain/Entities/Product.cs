@@ -27,6 +27,7 @@ public class Product : BaseEntity
     public ICollection<ProductImage> Images { get; private set; } = [];
     public ICollection<OrderItem> OrderItems { get; private set; } = [];
     public ICollection<CartItem> CartItems { get; private set; } = [];
+    public ICollection<ProductVariant> Variants { get; private set; } = [];
 
     public static Product Create(
         string name,

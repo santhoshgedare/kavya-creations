@@ -20,11 +20,14 @@ public record CartItemDto(
     string? ProductImageUrl,
     decimal UnitPrice,
     int Quantity,
-    decimal SubTotal
+    decimal SubTotal,
+    Guid? VariantId,
+    string? VariantSKU,
+    string? VariantAttributes
 );
 
 // Add to cart
-public record AddToCartCommand(Guid ProductId, int Quantity) : IRequest<CartDto>;
+public record AddToCartCommand(Guid ProductId, int Quantity, Guid? VariantId = null) : IRequest<CartDto>;
 
 public sealed class AddToCartCommandHandler(IApplicationDbContext db, ICurrentUserService currentUser)
     : IRequestHandler<AddToCartCommand, CartDto>
@@ -37,11 +40,22 @@ public sealed class AddToCartCommandHandler(IApplicationDbContext db, ICurrentUs
             .FirstOrDefaultAsync(p => p.Id == request.ProductId && !p.IsDeleted, cancellationToken)
             ?? throw new NotFoundException("Product", request.ProductId);
 
-        if (product.StockQuantity < request.Quantity)
+        if (request.VariantId.HasValue)
+        {
+            var variant = await db.ProductVariants
+                .FirstOrDefaultAsync(v => v.Id == request.VariantId.Value && !v.IsDeleted, cancellationToken)
+                ?? throw new NotFoundException("ProductVariant", request.VariantId.Value);
+            if (variant.StockQuantity < request.Quantity)
+                throw new DomainException("Insufficient variant stock.");
+        }
+        else if (product.StockQuantity < request.Quantity)
+        {
             throw new DomainException("Insufficient stock.");
+        }
 
         var cart = await db.Carts
             .Include(c => c.Items).ThenInclude(i => i.Product).ThenInclude(p => p.Images)
+            .Include(c => c.Items).ThenInclude(i => i.Variant)
             .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
 
         if (cart is null)
@@ -50,7 +64,7 @@ public sealed class AddToCartCommandHandler(IApplicationDbContext db, ICurrentUs
             db.Carts.Add(cart);
         }
 
-        cart.AddItem(request.ProductId, request.Quantity);
+        cart.AddItem(request.ProductId, request.Quantity, request.VariantId);
         await db.SaveChangesAsync(cancellationToken);
         return MapToDto(cart);
     }
@@ -62,11 +76,17 @@ public sealed class AddToCartCommandHandler(IApplicationDbContext db, ICurrentUs
             i.Product?.Name ?? "",
             i.Product?.Images.FirstOrDefault(img => img.IsPrimary)?.Url
                 ?? i.Product?.Images.FirstOrDefault()?.Url,
-            i.Product?.GetEffectivePrice() ?? 0,
+            i.Variant?.Price.Amount ?? i.Product?.GetEffectivePrice() ?? 0,
             i.Quantity,
-            (i.Product?.GetEffectivePrice() ?? 0) * i.Quantity
+            (i.Variant?.Price.Amount ?? i.Product?.GetEffectivePrice() ?? 0) * i.Quantity,
+            i.VariantId,
+            i.Variant?.SKU,
+            i.Variant?.AttributeValues != null
+                ? string.Join(", ", i.Variant.AttributeValues
+                    .Select(av => av.AttributeValue?.DisplayValue ?? ""))
+                : null
         )).ToList(),
-        cart.Items.Sum(i => (i.Product?.GetEffectivePrice() ?? 0) * i.Quantity),
+        cart.Items.Sum(i => (i.Variant?.Price.Amount ?? i.Product?.GetEffectivePrice() ?? 0) * i.Quantity),
         cart.Items.Sum(i => i.Quantity)
     );
 }
@@ -83,6 +103,7 @@ public sealed class UpdateCartItemCommandHandler(IApplicationDbContext db, ICurr
 
         var cart = await db.Carts
             .Include(c => c.Items).ThenInclude(i => i.Product).ThenInclude(p => p.Images)
+            .Include(c => c.Items).ThenInclude(i => i.Variant)
             .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken)
             ?? throw new NotFoundException("Cart", userId);
 
@@ -104,6 +125,7 @@ public sealed class RemoveFromCartCommandHandler(IApplicationDbContext db, ICurr
 
         var cart = await db.Carts
             .Include(c => c.Items).ThenInclude(i => i.Product).ThenInclude(p => p.Images)
+            .Include(c => c.Items).ThenInclude(i => i.Variant)
             .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken)
             ?? throw new NotFoundException("Cart", userId);
 
@@ -125,6 +147,7 @@ public sealed class GetCartQueryHandler(IApplicationDbContext db, ICurrentUserSe
 
         var cart = await db.Carts
             .Include(c => c.Items).ThenInclude(i => i.Product).ThenInclude(p => p.Images)
+            .Include(c => c.Items).ThenInclude(i => i.Variant)
             .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
 
         return cart is null ? null : AddToCartCommandHandler.MapToDto(cart);
