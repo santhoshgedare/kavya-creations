@@ -12,6 +12,7 @@ public sealed class LocalFileStorageService(IWebHostEnvironment env) : IFileStor
         [".jpg", ".jpeg", ".png", ".webp", ".gif"];
 
     private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
+    private const int MaxBaseFileNameLength = 40;
 
     public async Task<string> UploadAsync(Stream stream, string originalFileName, string contentType, CancellationToken ct = default)
     {
@@ -38,7 +39,7 @@ public sealed class LocalFileStorageService(IWebHostEnvironment env) : IFileStor
             .ToLowerInvariant();
         // Keep only safe characters
         safeFileName = new string(safeFileName.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray());
-        safeFileName = string.IsNullOrEmpty(safeFileName) ? "image" : safeFileName[..Math.Min(safeFileName.Length, 40)];
+        safeFileName = string.IsNullOrEmpty(safeFileName) ? "image" : safeFileName[..Math.Min(safeFileName.Length, MaxBaseFileNameLength)];
 
         var uniqueName = $"{safeFileName}-{Guid.NewGuid():N}{extension}";
         var filePath = Path.Combine(uploadsDir, uniqueName);

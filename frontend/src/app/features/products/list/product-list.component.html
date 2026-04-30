@@ -113,8 +113,8 @@
               <p class="product-card__desc">{{ product.shortDescription }}</p>
               <div class="product-card__price-row">
                 @if (product.discountPrice) {
-                  <span class="price-original">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
-                  <span class="price-discounted">{{ product.discountPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                  <span class="price-original">{{ product.discountPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                  <span class="price-discounted">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
                 } @else {
                   <span class="price">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
                 }

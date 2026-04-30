@@ -104,7 +104,11 @@ export class ImageUploadComponent {
     if (!ALLOWED_TYPES.has(file.type)) {
       return `"${file.name}" has an unsupported type. Use JPG, PNG, WebP, or GIF.`;
     }
-    const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+    const lastDot = file.name.lastIndexOf('.');
+    if (lastDot < 0) {
+      return `"${file.name}" has no file extension. Use JPG, PNG, WebP, or GIF.`;
+    }
+    const ext = file.name.slice(lastDot).toLowerCase();
     if (!ALLOWED_EXTS.has(ext)) {
       return `"${file.name}" has an unsupported extension.`;
     }
