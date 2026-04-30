@@ -56,6 +56,14 @@ export class ProductService {
     return this.http.post<string>(`${this.baseUrl}/categories`, data);
   }
 
+  updateCategory(id: string, data: Partial<Category>): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/categories/${id}`, data);
+  }
+
+  deleteCategory(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/categories/${id}`);
+  }
+
   uploadImages(files: File[]): Observable<string[]> {
     const formData = new FormData();
     files.forEach(file => formData.append('files', file, file.name));

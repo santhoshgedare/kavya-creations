@@ -1,19 +1,43 @@
 <div class="profile-page">
-  <!-- Profile Header Banner -->
+  <!-- Profile Header -->
   @if (authService.currentUser(); as user) {
     <div class="profile-header">
-      <div class="avatar">
-        @if (user.profileImageUrl) {
-          <img class="avatar-img" [src]="user.profileImageUrl" [alt]="user.firstName">
-        } @else {
-          <div class="avatar-placeholder">
-            {{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}
-          </div>
-        }
+      <div class="avatar-section">
+        <div class="avatar-wrapper">
+          @if (user.profileImageUrl) {
+            <img class="avatar-img" [src]="user.profileImageUrl" [alt]="user.firstName">
+          } @else {
+            <div class="avatar-placeholder">
+              {{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}
+            </div>
+          }
+        </div>
+        <div class="avatar-upload-area">
+          <app-image-upload
+            #avatarUpload
+            [maxFiles]="1"
+            [existingUrls]="[]"
+            (urlsChange)="$event">
+          </app-image-upload>
+          <button mat-stroked-button (click)="uploadAvatar()" [disabled]="uploadingAvatar()" class="upload-btn">
+            @if (uploadingAvatar()) {
+              <mat-spinner diameter="16"></mat-spinner>
+              <span>Uploading...</span>
+            } @else {
+              <ng-container>
+                <mat-icon>photo_camera</mat-icon>
+                <span>Change Photo</span>
+              </ng-container>
+            }
+          </button>
+        </div>
       </div>
       <div class="profile-header-info">
         <h2>{{ user.firstName }} {{ user.lastName }}</h2>
-        <p>{{ user.email }}</p>
+        <p class="user-email">{{ user.email }}</p>
+        @if (user.phoneNumber) {
+          <p class="user-phone"><mat-icon inline>phone</mat-icon> {{ user.phoneNumber }}</p>
+        }
       </div>
     </div>
   }
@@ -21,43 +45,64 @@
   <div class="profile-layout">
     <!-- Profile Edit Form -->
     <div class="profile-card">
-      <h3>
-        <mat-icon>person_outline</mat-icon>
-        Edit Profile
-      </h3>
+      <div class="card-header">
+        <h3><mat-icon>person_outline</mat-icon> Edit Profile</h3>
+        <button mat-stroked-button (click)="toggleEditMode()" class="edit-toggle-btn">
+          @if (editMode()) {
+            <mat-icon>close</mat-icon> Cancel
+          } @else {
+            <mat-icon>edit</mat-icon> Edit
+          }
+        </button>
+      </div>
+
       <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
         <div class="row-fields">
           <mat-form-field appearance="outline">
             <mat-label>First Name</mat-label>
-            <input matInput formControlName="firstName">
+            <input matInput formControlName="firstName" [readonly]="!editMode()">
             @if (profileForm.get('firstName')?.touched && profileForm.get('firstName')?.errors?.['required']) {
               <mat-error>First name is required</mat-error>
             }
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Last Name</mat-label>
-            <input matInput formControlName="lastName">
+            <input matInput formControlName="lastName" [readonly]="!editMode()">
             @if (profileForm.get('lastName')?.touched && profileForm.get('lastName')?.errors?.['required']) {
               <mat-error>Last name is required</mat-error>
             }
           </mat-form-field>
         </div>
+
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Profile Image URL</mat-label>
-          <input matInput formControlName="profileImageUrl" placeholder="https://example.com/photo.jpg">
-          <mat-icon matSuffix>image</mat-icon>
+          <mat-label>Email</mat-label>
+          <input matInput [value]="authService.currentUser()?.email ?? ''" readonly>
+          <mat-icon matSuffix>lock</mat-icon>
+          <mat-hint>Email cannot be changed</mat-hint>
         </mat-form-field>
-        <button mat-raised-button type="submit" class="save-btn" [disabled]="saving()">
-          @if (saving()) {
-            <mat-spinner diameter="20"></mat-spinner>
-            <span>Saving...</span>
-          } @else {
-            <ng-container>
-              <mat-icon>save</mat-icon>
-              <span>Save Changes</span>
-            </ng-container>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Phone Number</mat-label>
+          <input matInput formControlName="phoneNumber" placeholder="+91 9876543210" [readonly]="!editMode()">
+          <mat-icon matPrefix>phone</mat-icon>
+          @if (profileForm.get('phoneNumber')?.errors?.['pattern']) {
+            <mat-error>Enter a valid phone number</mat-error>
           }
-        </button>
+        </mat-form-field>
+
+        @if (editMode()) {
+          <button mat-raised-button type="submit" class="save-btn" [disabled]="saving()">
+            @if (saving()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Saving...</span>
+            } @else {
+              <ng-container>
+                <mat-icon>save</mat-icon>
+                <span>Save Changes</span>
+              </ng-container>
+            }
+          </button>
+        }
       </form>
     </div>
 

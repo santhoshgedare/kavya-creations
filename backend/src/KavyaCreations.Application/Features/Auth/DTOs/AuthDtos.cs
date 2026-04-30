@@ -13,6 +13,7 @@ public record UserProfileDto(
     string LastName,
     string Email,
     string? ProfileImageUrl,
+    string? PhoneNumber,
     List<string> Roles
 );
 
@@ -52,5 +53,6 @@ public record ChangePasswordRequest(
 public record UpdateProfileRequest(
     string FirstName,
     string LastName,
-    string? ProfileImageUrl
+    string? ProfileImageUrl,
+    string? PhoneNumber
 );

@@ -17,6 +17,6 @@ public sealed class GetProfileQueryHandler(UserManager<ApplicationUser> userMana
             ?? throw new NotFoundException("User", request.UserId);
 
         var roles = await userManager.GetRolesAsync(user);
-        return new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, roles.ToList());
+        return new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, user.PhoneNumber, roles.ToList());
     }
 }
