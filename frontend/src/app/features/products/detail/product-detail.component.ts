@@ -40,15 +40,25 @@ export class ProductDetailComponent implements OnInit {
   selectedAttributeValues = signal<Record<string, string>>({});
   readonly ProductStatus = ProductStatus;
 
+  // Pre-computed lookup: attributeValueId -> attributeId for O(1) lookups
+  private readonly valueToAttributeMap = computed(() => {
+    const map = new Map<string, string>();
+    for (const ca of this.categoryAttributes()) {
+      for (const val of ca.values) {
+        map.set(val.id, ca.attributeId);
+      }
+    }
+    return map;
+  });
+
   selectedVariant = computed(() => {
     const attrs = this.selectedAttributeValues();
     const vs = this.variants();
     if (vs.length === 0 || Object.keys(attrs).length === 0) return null;
+    const lookup = this.valueToAttributeMap();
     return vs.find(v =>
       v.attributeValues.every(av => {
-        const attrId = this.categoryAttributes().find(ca =>
-          ca.values.some(val => val.id === av.attributeValueId)
-        )?.attributeId;
+        const attrId = lookup.get(av.attributeValueId);
         return attrId ? attrs[attrId] === av.attributeValueId : true;
       })
     ) ?? null;

@@ -113,8 +113,9 @@ public sealed class GenerateVariantsCommandHandler(IApplicationDbContext db)
         var createdIds = new List<Guid>();
         foreach (var combo in combinations)
         {
-            var skuSuffix = string.Join("-", combo.Select(v => v.Value));
-            var sku = $"{product.Slug}-{skuSuffix}".ToLowerInvariant();
+            var skuSuffix = string.Join("-", combo.Select(v =>
+                System.Text.RegularExpressions.Regex.Replace(v.Value.ToLowerInvariant(), @"[^a-z0-9]+", "")));
+            var sku = $"{product.Slug}-{skuSuffix}";
 
             if (await db.ProductVariants.AnyAsync(v => v.SKU == sku && !v.IsDeleted, cancellationToken))
                 continue;

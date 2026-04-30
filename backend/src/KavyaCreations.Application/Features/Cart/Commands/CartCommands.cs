@@ -83,7 +83,8 @@ public sealed class AddToCartCommandHandler(IApplicationDbContext db, ICurrentUs
             i.Variant?.SKU,
             i.Variant?.AttributeValues != null
                 ? string.Join(", ", i.Variant.AttributeValues
-                    .Select(av => av.AttributeValue?.DisplayValue ?? ""))
+                    .Select(av => av.AttributeValue?.DisplayValue)
+                    .Where(dv => !string.IsNullOrEmpty(dv)))
                 : null
         )).ToList(),
         cart.Items.Sum(i => (i.Variant?.Price.Amount ?? i.Product?.GetEffectivePrice() ?? 0) * i.Quantity),

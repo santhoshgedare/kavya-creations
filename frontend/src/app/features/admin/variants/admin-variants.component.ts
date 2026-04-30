@@ -134,10 +134,6 @@ export class AdminVariantsComponent implements OnInit {
     });
   }
 
-  getAttributeValues(attributeId: string): { id: string; displayValue: string }[] {
-    return this.attributes().find(a => a.id === attributeId)?.values.map(v => ({ id: v.id, displayValue: v.displayValue })) ?? [];
-  }
-
   getAllValues(): { id: string; label: string }[] {
     return this.attributes().flatMap(a =>
       a.values.map(v => ({ id: v.id, label: `${a.displayName}: ${v.displayValue}` }))
