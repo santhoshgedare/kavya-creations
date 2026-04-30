@@ -21,8 +21,8 @@ export class CartService {
     );
   }
 
-  addToCart(productId: string, quantity: number = 1): Observable<Cart> {
-    return this.http.post<Cart>(`${this.baseUrl}/items`, { productId, quantity }).pipe(
+  addToCart(productId: string, quantity: number = 1, variantId?: string): Observable<Cart> {
+    return this.http.post<Cart>(`${this.baseUrl}/items`, { productId, quantity, variantId }).pipe(
       tap(cart => this._cart.set(cart))
     );
   }

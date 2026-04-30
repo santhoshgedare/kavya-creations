@@ -143,6 +143,99 @@ public sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
     public void Configure(EntityTypeBuilder<CartItem> builder)
     {
         builder.HasKey(i => i.Id);
-        builder.HasIndex(i => new { i.CartId, i.ProductId }).IsUnique();
+        builder.HasIndex(i => new { i.CartId, i.ProductId, i.VariantId }).IsUnique();
+
+        builder.HasOne(i => i.Variant)
+            .WithMany(v => v.CartItems)
+            .HasForeignKey(i => i.VariantId)
+            .OnDelete(DeleteBehavior.SetNull)
+            .IsRequired(false);
+    }
+}
+
+public sealed class ProductAttributeConfiguration : IEntityTypeConfiguration<ProductAttribute>
+{
+    public void Configure(EntityTypeBuilder<ProductAttribute> builder)
+    {
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Name).IsRequired().HasMaxLength(100);
+        builder.Property(a => a.DisplayName).IsRequired().HasMaxLength(100);
+        builder.Property(a => a.InputType).HasMaxLength(20).HasDefaultValue("select");
+        builder.HasIndex(a => a.Name).IsUnique();
+
+        builder.HasMany(a => a.Values)
+            .WithOne(v => v.Attribute)
+            .HasForeignKey(v => v.AttributeId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ProductAttributeValueConfiguration : IEntityTypeConfiguration<ProductAttributeValue>
+{
+    public void Configure(EntityTypeBuilder<ProductAttributeValue> builder)
+    {
+        builder.HasKey(v => v.Id);
+        builder.Property(v => v.Value).IsRequired().HasMaxLength(100);
+        builder.Property(v => v.DisplayValue).IsRequired().HasMaxLength(100);
+        builder.HasIndex(v => new { v.AttributeId, v.Value }).IsUnique();
+    }
+}
+
+public sealed class CategoryAttributeMappingConfiguration : IEntityTypeConfiguration<CategoryAttributeMapping>
+{
+    public void Configure(EntityTypeBuilder<CategoryAttributeMapping> builder)
+    {
+        builder.HasKey(m => m.Id);
+        builder.HasIndex(m => new { m.CategoryId, m.AttributeId }).IsUnique();
+
+        builder.HasOne(m => m.Category)
+            .WithMany(c => c.AttributeMappings)
+            .HasForeignKey(m => m.CategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(m => m.Attribute)
+            .WithMany(a => a.CategoryMappings)
+            .HasForeignKey(m => m.AttributeId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ProductVariantConfiguration : IEntityTypeConfiguration<ProductVariant>
+{
+    public void Configure(EntityTypeBuilder<ProductVariant> builder)
+    {
+        builder.HasKey(v => v.Id);
+        builder.Property(v => v.SKU).IsRequired().HasMaxLength(100);
+        builder.HasIndex(v => v.SKU).IsUnique();
+        builder.HasIndex(v => v.ProductId);
+
+        builder.OwnsOne(v => v.Price, money =>
+        {
+            money.Property(m => m.Amount).HasColumnName("Price").HasPrecision(18, 2);
+            money.Property(m => m.Currency).HasColumnName("PriceCurrency").HasMaxLength(3).HasDefaultValue("INR");
+        });
+
+        builder.HasOne(v => v.Product)
+            .WithMany(p => p.Variants)
+            .HasForeignKey(v => v.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ProductVariantAttributeValueConfiguration : IEntityTypeConfiguration<ProductVariantAttributeValue>
+{
+    public void Configure(EntityTypeBuilder<ProductVariantAttributeValue> builder)
+    {
+        builder.HasKey(x => new { x.VariantId, x.AttributeValueId });
+
+        builder.HasOne(x => x.Variant)
+            .WithMany(v => v.AttributeValues)
+            .HasForeignKey(x => x.VariantId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.AttributeValue)
+            .WithMany(av => av.VariantAttributeValues)
+            .HasForeignKey(x => x.AttributeValueId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

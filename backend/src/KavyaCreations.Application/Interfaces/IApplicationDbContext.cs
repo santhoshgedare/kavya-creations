@@ -12,5 +12,10 @@ public interface IApplicationDbContext
     DbSet<OrderItem> OrderItems { get; }
     DbSet<Cart> Carts { get; }
     DbSet<CartItem> CartItems { get; }
+    DbSet<ProductAttribute> ProductAttributes { get; }
+    DbSet<ProductAttributeValue> ProductAttributeValues { get; }
+    DbSet<CategoryAttributeMapping> CategoryAttributeMappings { get; }
+    DbSet<ProductVariant> ProductVariants { get; }
+    DbSet<ProductVariantAttributeValue> ProductVariantAttributeValues { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -17,6 +17,7 @@ public class Category : BaseEntity
     public Category? ParentCategory { get; private set; }
     public ICollection<Category> SubCategories { get; private set; } = [];
     public ICollection<Product> Products { get; private set; } = [];
+    public ICollection<CategoryAttributeMapping> AttributeMappings { get; private set; } = [];
 
     public static Category Create(string name, string slug, string? description = null, Guid? parentCategoryId = null)
     {

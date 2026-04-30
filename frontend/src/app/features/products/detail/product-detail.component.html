@@ -44,7 +44,10 @@
         <h1 class="product-info__name">{{ p.name }}</h1>
 
         <div class="product-info__price">
-          @if (p.discountPrice) {
+          @if (selectedVariant()) {
+            <span class="price">{{ effectivePrice() | currency:'INR':'symbol':'1.0-0' }}</span>
+            <span class="variant-sku">SKU: {{ selectedVariant()!.sku }}</span>
+          } @else if (p.discountPrice) {
             <span class="price-original">{{ p.price | currency:'INR':'symbol':'1.0-0' }}</span>
             <span class="price-discounted">{{ p.discountPrice | currency:'INR':'symbol':'1.0-0' }}</span>
             <span class="sale-badge">SALE</span>
@@ -83,6 +86,39 @@
             </span>
           </div>
         </div>
+
+        @if (categoryAttributes().length > 0) {
+          <div class="product-info__attributes">
+            @for (attr of categoryAttributes(); track attr.attributeId) {
+              <div class="attribute-group">
+                <span class="attribute-label">{{ attr.attributeDisplayName }}
+                  @if (attr.isRequired) { <span class="required">*</span> }
+                </span>
+                @if (attr.inputType === 'chips') {
+                  <div class="attribute-chips">
+                    @for (val of attr.values; track val.id) {
+                      <button class="chip-btn"
+                              [class.chip-btn--active]="selectedAttributeValues()[attr.attributeId] === val.id"
+                              (click)="onAttributeSelect(attr.attributeId, val.id)">
+                        {{ val.displayValue }}
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <mat-form-field appearance="outline" style="width:100%">
+                    <mat-label>Select {{ attr.attributeDisplayName }}</mat-label>
+                    <mat-select [value]="selectedAttributeValues()[attr.attributeId]"
+                                (valueChange)="onAttributeSelect(attr.attributeId, $event)">
+                      @for (val of attr.values; track val.id) {
+                        <mat-option [value]="val.id">{{ val.displayValue }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                }
+              </div>
+            }
+          </div>
+        }
 
         @if (p.stockQuantity > 0) {
           <div class="quantity-wrap">

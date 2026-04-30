@@ -80,3 +80,49 @@ export interface PagedResult<T> {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 }
+
+export interface ProductAttributeValue {
+  id: string;
+  attributeId: string;
+  value: string;
+  displayValue: string;
+  displayOrder: number;
+}
+
+export interface ProductAttribute {
+  id: string;
+  name: string;
+  displayName: string;
+  inputType: 'select' | 'chips' | 'radio';
+  values: ProductAttributeValue[];
+}
+
+export interface CategoryAttribute {
+  mappingId: string;
+  categoryId: string;
+  attributeId: string;
+  attributeName: string;
+  attributeDisplayName: string;
+  inputType: 'select' | 'chips' | 'radio';
+  isRequired: boolean;
+  displayOrder: number;
+  values: ProductAttributeValue[];
+}
+
+export interface VariantAttributeValue {
+  attributeValueId: string;
+  attributeName: string;
+  value: string;
+  displayValue: string;
+}
+
+export interface ProductVariant {
+  id: string;
+  productId: string;
+  sku: string;
+  price: number;
+  stockQuantity: number;
+  isAvailable: boolean;
+  attributeValues: VariantAttributeValue[];
+}
+
