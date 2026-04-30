@@ -1,0 +1,88 @@
+<div class="upload-zone" [class.upload-zone--dragover]="isDragOver()">
+  <!-- Drop Area -->
+  <div class="upload-zone__drop-area" (click)="openFilePicker()">
+    <mat-icon class="upload-zone__icon">cloud_upload</mat-icon>
+    <p class="upload-zone__title">Drag &amp; drop images here</p>
+    <p class="upload-zone__subtitle">or click to browse files</p>
+    <p class="upload-zone__hint">JPG, PNG, WebP, GIF · Max 10 MB per file · Up to {{ maxFiles }} images</p>
+  </div>
+
+  <!-- Hidden file input -->
+  <input #fileInput type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+         multiple style="display:none" (change)="onFileInputChange($event)">
+
+  <!-- Existing images (edit mode) -->
+  @if (existingImages.length > 0) {
+    <div class="upload-zone__section-label">Existing Images</div>
+    <div class="upload-zone__previews">
+      @for (url of existingImages; track url; let i = $index) {
+        <div class="preview-card">
+          <div class="preview-card__image-wrap">
+            <img [src]="url" [alt]="'Image ' + (i + 1)" class="preview-card__image">
+            @if (i === 0) {
+              <span class="preview-card__primary-badge">Primary</span>
+            }
+          </div>
+          <div class="preview-card__actions">
+            <button mat-icon-button class="preview-card__remove"
+                    (click)="removeExisting(url)" type="button" title="Remove">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- New / pending files -->
+  @if (files().length > 0) {
+    <div class="upload-zone__section-label">New Images</div>
+    <div class="upload-zone__previews">
+      @for (item of files(); track item.file.name; let i = $index) {
+        <div class="preview-card" [class.preview-card--error]="item.error">
+          <div class="preview-card__image-wrap">
+            @if (item.previewUrl) {
+              <img [src]="item.previewUrl" [alt]="item.file.name" class="preview-card__image">
+            } @else {
+              <div class="preview-card__skeleton"></div>
+            }
+            @if (item.progress > 0 && item.progress < 100) {
+              <div class="preview-card__progress-overlay">
+                <mat-progress-bar mode="determinate" [value]="item.progress"></mat-progress-bar>
+                <span class="preview-card__progress-text">{{ item.progress }}%</span>
+              </div>
+            }
+            @if (item.url) {
+              <div class="preview-card__done-overlay">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+            }
+            @if (item.error) {
+              <div class="preview-card__error-overlay" [title]="item.error">
+                <mat-icon>error</mat-icon>
+              </div>
+            }
+          </div>
+
+          <p class="preview-card__name">{{ item.file.name }}</p>
+          <p class="preview-card__size">{{ (item.file.size / 1024 / 1024).toFixed(2) }} MB</p>
+
+          <div class="preview-card__actions">
+            <button mat-icon-button class="preview-card__move" (click)="moveUp(i)"
+                    [disabled]="i === 0" type="button" title="Move up">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <button mat-icon-button class="preview-card__move" (click)="moveDown(i)"
+                    [disabled]="i === files().length - 1" type="button" title="Move down">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+            <button mat-icon-button class="preview-card__remove" (click)="removeFile(i)"
+                    type="button" title="Remove">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

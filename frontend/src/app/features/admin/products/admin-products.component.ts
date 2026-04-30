@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -10,19 +10,25 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductService } from '../../../core/services/product.service';
 import { ProductListItem, Category, ProductStatus } from '../../../core/models/product.model';
+import { ImageUploadComponent } from '../../../shared/components/image-upload/image-upload.component';
 
 @Component({
   selector: 'app-product-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule, MatButtonModule],
+  imports: [
+    ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule,
+    MatSelectModule, MatCheckboxModule, MatButtonModule, MatProgressBarModule,
+    ImageUploadComponent,
+  ],
   template: `
     <h2 mat-dialog-title>{{ data.product ? 'Edit Product' : 'New Product' }}</h2>
-    <mat-dialog-content [formGroup]="form" style="min-width:480px">
+    <mat-dialog-content [formGroup]="form" style="min-width:520px;max-width:640px;overflow-y:auto;max-height:75vh">
       <mat-form-field appearance="outline" style="width:100%">
         <mat-label>Name</mat-label>
         <input matInput formControlName="name">
@@ -79,22 +85,50 @@ import { ProductListItem, Category, ProductStatus } from '../../../core/models/p
           <mat-option [value]="3">Out of Stock</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-checkbox formControlName="isFeatured" style="margin-bottom:12px">Featured</mat-checkbox>
-      <mat-form-field appearance="outline" style="width:100%;margin-top:8px">
-        <mat-label>Image URLs (comma-separated)</mat-label>
-        <textarea matInput formControlName="imageUrls" rows="2"></textarea>
-      </mat-form-field>
+      <mat-checkbox formControlName="isFeatured" style="margin-bottom:16px">Featured</mat-checkbox>
+
+      <!-- Image Upload Section -->
+      <div style="margin-top:8px;margin-bottom:4px">
+        <p style="font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--kc-text-muted);margin:0 0 8px">
+          Product Images
+        </p>
+        <app-image-upload
+          #imageUpload
+          [maxFiles]="8"
+          [existingUrls]="data.existingImageUrls ?? []"
+          (urlsChange)="onUrlsChange($event)">
+        </app-image-upload>
+      </div>
+
+      @if (uploading()) {
+        <mat-progress-bar mode="determinate" [value]="uploadProgress()" style="margin-top:8px"></mat-progress-bar>
+        <p style="font-size:0.75rem;color:var(--kc-text-muted);margin:4px 0 0;text-align:center">
+          Uploading images… {{ uploadProgress() }}%
+        </p>
+      }
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-flat-button color="primary" (click)="save()">Save</button>
+      <button mat-button mat-dialog-close [disabled]="uploading()">Cancel</button>
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="uploading()">
+        {{ uploading() ? 'Uploading…' : 'Save' }}
+      </button>
     </mat-dialog-actions>
   `,
 })
 export class ProductDialogComponent {
-  readonly data = inject<{ product: ProductListItem | null; categories: Category[] }>(MAT_DIALOG_DATA);
+  readonly data = inject<{ product: ProductListItem | null; categories: Category[]; existingImageUrls?: string[] }>(MAT_DIALOG_DATA);
   readonly dialogRef = inject(MatDialogRef<ProductDialogComponent>);
   private readonly fb = inject(FormBuilder);
+  private readonly productService = inject(ProductService);
+  private readonly snackBar = inject(MatSnackBar);
+
+  @ViewChild('imageUpload') imageUploadRef!: ImageUploadComponent;
+
+  uploading = signal(false);
+  uploadProgress = signal(0);
+
+  /** Combined list of existing + newly uploaded (server) URLs */
+  private resolvedUrls: string[] = [];
 
   form = this.fb.group({
     name: [this.data.product?.name ?? '', Validators.required],
@@ -109,16 +143,37 @@ export class ProductDialogComponent {
     weight: [''],
     status: [this.data.product?.status ?? 1],
     isFeatured: [this.data.product?.isFeatured ?? false],
-    imageUrls: [''],
   });
+
+  onUrlsChange(urls: string[]): void {
+    this.resolvedUrls = urls;
+  }
 
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    const v = this.form.value;
-    this.dialogRef.close({
-      ...v,
-      imageUrls: (v.imageUrls ?? '').split(',').map((u: string) => u.trim()).filter((u: string) => !!u),
-    });
+
+    const pendingFiles = this.imageUploadRef?.getPendingFiles() ?? [];
+
+    if (pendingFiles.length > 0) {
+      this.uploading.set(true);
+      this.uploadProgress.set(10);
+
+      this.productService.uploadImages(pendingFiles).subscribe({
+        next: (uploadedUrls) => {
+          this.uploadProgress.set(100);
+          const existingUrls = this.imageUploadRef.existingImages;
+          const allUrls = [...existingUrls, ...uploadedUrls];
+          this.uploading.set(false);
+          this.dialogRef.close({ ...this.form.value, imageUrls: allUrls });
+        },
+        error: () => {
+          this.uploading.set(false);
+          this.snackBar.open('Image upload failed. Please try again.', 'Close', { duration: 4000 });
+        },
+      });
+    } else {
+      this.dialogRef.close({ ...this.form.value, imageUrls: this.resolvedUrls });
+    }
   }
 }
 
@@ -157,9 +212,24 @@ export class AdminProductsComponent implements OnInit {
   }
 
   openDialog(product: ProductListItem | null): void {
+    if (product) {
+      // Fetch full product details to get existing image URLs
+      this.productService.getProductById(product.id).subscribe({
+        next: (fullProduct) => {
+          const existingImageUrls = fullProduct.images.map(img => img.url);
+          this.openDialogWithData(product, existingImageUrls);
+        },
+        error: () => this.openDialogWithData(product, []),
+      });
+    } else {
+      this.openDialogWithData(null, []);
+    }
+  }
+
+  private openDialogWithData(product: ProductListItem | null, existingImageUrls: string[]): void {
     const ref = this.dialog.open(ProductDialogComponent, {
-      width: '600px',
-      data: { product, categories: this.categories() },
+      width: '680px',
+      data: { product, categories: this.categories(), existingImageUrls },
     });
     ref.afterClosed().subscribe(result => {
       if (!result) return;

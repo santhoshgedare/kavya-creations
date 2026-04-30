@@ -1,0 +1,56 @@
+<div class="lightbox">
+  <!-- Close button -->
+  <button mat-icon-button class="lightbox__close" (click)="close()" aria-label="Close preview">
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <!-- Main image area -->
+  <div class="lightbox__image-area">
+    @if (hasMultiple) {
+      <button mat-icon-button class="lightbox__nav lightbox__nav--prev"
+              (click)="prev()" aria-label="Previous image">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+    }
+
+    <div class="lightbox__image-wrap">
+      @if (imageLoading()) {
+        <div class="lightbox__skeleton"></div>
+      }
+      @if (!imageError()) {
+        <img class="lightbox__image"
+             [src]="currentImage.url"
+             [alt]="currentImage.altText || 'Product image'"
+             [class.lightbox__image--loaded]="!imageLoading()"
+             (load)="onImageLoad()"
+             (error)="onImageError()">
+      } @else {
+        <div class="lightbox__error">
+          <mat-icon>broken_image</mat-icon>
+          <p>Image could not be loaded</p>
+        </div>
+      }
+    </div>
+
+    @if (hasMultiple) {
+      <button mat-icon-button class="lightbox__nav lightbox__nav--next"
+              (click)="next()" aria-label="Next image">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    }
+  </div>
+
+  <!-- Thumbnail strip -->
+  @if (hasMultiple) {
+    <div class="lightbox__thumbs">
+      @for (img of data.images; track img.url; let i = $index) {
+        <button class="lightbox__thumb" [class.lightbox__thumb--active]="i === currentIndex()"
+                (click)="goTo(i)" [attr.aria-label]="'View image ' + (i + 1)">
+          <img [src]="img.url" [alt]="img.altText || 'Thumbnail'" loading="lazy">
+        </button>
+      }
+    </div>
+
+    <p class="lightbox__counter">{{ currentIndex() + 1 }} / {{ data.images.length }}</p>
+  }
+</div>

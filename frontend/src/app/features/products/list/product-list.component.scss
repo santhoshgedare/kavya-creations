@@ -145,6 +145,7 @@
     border-color: var(--kc-accent);
 
     .product-card__image { transform: scale(1.05); }
+    .product-card__overlay { opacity: 1; }
   }
 
   &__image-wrap {
@@ -152,6 +153,7 @@
     aspect-ratio: 1;
     overflow: hidden;
     background: var(--kc-surface-alt);
+    cursor: pointer;
   }
 
   &__image {
@@ -159,6 +161,26 @@
     height: 100%;
     object-fit: cover;
     transition: transform var(--transition-slow);
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(44, 24, 16, 0.42);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+  }
+
+  &__quick-view {
+    background: white !important;
+    color: var(--kc-primary) !important;
+    border-radius: var(--radius-full) !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em !important;
   }
 
   &__badge {
@@ -249,9 +271,44 @@
     &:hover:not([disabled]) { background: var(--kc-primary-light) !important; }
     &[disabled] { opacity: 0.5; }
   }
+
+  // Skeleton state
+  &--skeleton {
+    cursor: default;
+    pointer-events: none;
+
+    .product-card__image-skeleton {
+      aspect-ratio: 1;
+      background: linear-gradient(90deg,
+        var(--kc-surface-alt) 25%,
+        var(--kc-divider) 50%,
+        var(--kc-surface-alt) 75%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    .product-card__body {
+      gap: var(--sp-3);
+    }
+  }
 }
 
-// ─── Empty State ──────────────────────────────────────────────────────────────
+.skeleton-line {
+  height: 14px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg,
+    var(--kc-surface-alt) 25%,
+    var(--kc-divider) 50%,
+    var(--kc-surface-alt) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+
+  &--wide   { width: 75%; }
+  &--medium { width: 55%; }
+  &--narrow { width: 40%; }
+}
 .empty-state {
   grid-column: 1/-1;
   display: flex;

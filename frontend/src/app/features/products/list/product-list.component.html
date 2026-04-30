@@ -70,8 +70,18 @@
     </div>
 
     @if (loading()) {
-      <div class="loading-center">
-        <mat-spinner diameter="48"></mat-spinner>
+      <div class="products-grid">
+        @for (i of [1,2,3,4,5,6,7,8,9,10,11,12]; track i) {
+          <div class="product-card product-card--skeleton">
+            <div class="product-card__image-skeleton"></div>
+            <div class="product-card__body">
+              <div class="skeleton-line skeleton-line--narrow"></div>
+              <div class="skeleton-line skeleton-line--wide"></div>
+              <div class="skeleton-line skeleton-line--medium"></div>
+              <div class="skeleton-line skeleton-line--narrow" style="margin-top:auto"></div>
+            </div>
+          </div>
+        }
       </div>
     } @else {
       <div class="products-grid">
@@ -81,19 +91,32 @@
                  [routerLink]="['/products', product.slug]">
               <img class="product-card__image"
                    [src]="product.primaryImageUrl || 'assets/placeholder.jpg'"
-                   [alt]="product.name" loading="lazy">
+                   [alt]="product.name" loading="lazy"
+                   (error)="onImageError($event)">
               @if (product.discountPrice) {
                 <span class="product-card__badge">SALE</span>
               }
+              @if (product.stockQuantity === 0) {
+                <span class="product-card__badge product-card__badge--sold">Sold Out</span>
+              }
+              <div class="product-card__overlay">
+                <a mat-raised-button class="product-card__quick-view"
+                   [routerLink]="['/products', product.slug]"
+                   (click)="$event.stopPropagation()">
+                  View Details
+                </a>
+              </div>
             </div>
             <div class="product-card__body">
               <p class="product-card__category">{{ product.categoryName }}</p>
               <h3 class="product-card__name">{{ product.name }}</h3>
               <p class="product-card__desc">{{ product.shortDescription }}</p>
               <div class="product-card__price-row">
-                <span class="price">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
                 @if (product.discountPrice) {
-                  <span class="sale-badge">SALE</span>
+                  <span class="price-original">{{ product.discountPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                  <span class="price-discounted">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                } @else {
+                  <span class="price">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
                 }
               </div>
             </div>
