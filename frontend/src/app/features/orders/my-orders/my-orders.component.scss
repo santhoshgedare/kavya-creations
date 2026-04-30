@@ -1,0 +1,185 @@
+.my-orders-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-5);
+
+  @media (max-width: 599px) {
+    padding: var(--sp-4) var(--sp-3);
+  }
+}
+
+// ─── Header ────────────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+  flex-wrap: wrap;
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--kc-text-primary);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .back-link {
+    color: var(--kc-text-muted) !important;
+    font-size: 0.85rem !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    min-width: unset !important;
+    &:hover { color: var(--kc-primary) !important; }
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  }
+
+  .order-count {
+    font-size: 0.88rem;
+    color: var(--kc-text-muted);
+    margin: 0;
+  }
+}
+
+// ─── Loading / Empty ────────────────────────────────────────────────────────────
+.loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  gap: var(--sp-4);
+
+  mat-icon { font-size: 72px; width: 72px; height: 72px; color: var(--kc-border); }
+  h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--kc-text-secondary); margin: 0; }
+  p { color: var(--kc-text-muted); margin: 0; }
+}
+
+// ─── Orders List ───────────────────────────────────────────────────────────────
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.order-card {
+  display: block;
+  background: #fff;
+  border: 1px solid var(--kc-divider);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4) var(--sp-5);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--kc-primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+
+    .chevron { opacity: 1; transform: translateX(2px); }
+  }
+
+  @media (max-width: 599px) {
+    padding: var(--sp-3) var(--sp-4);
+  }
+}
+
+.order-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--kc-divider);
+  flex-wrap: wrap;
+}
+
+.order-number {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--kc-text-primary);
+
+  .order-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--kc-primary);
+  }
+}
+
+.order-card__body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.order-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: var(--kc-text-muted);
+
+    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+    &.paid   { color: #2e7d32; }
+    &.failed { color: var(--kc-error); }
+  }
+}
+
+.order-total {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--kc-primary);
+  white-space: nowrap;
+}
+
+.chevron {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  opacity: 0.4;
+  transition: opacity var(--transition-base), transform var(--transition-base);
+  color: var(--kc-text-muted);
+}
+
+.paginator {
+  margin-top: var(--sp-5);
+  background: transparent;
+}

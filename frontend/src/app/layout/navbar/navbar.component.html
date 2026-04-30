@@ -50,6 +50,10 @@
             <mat-icon>person_outline</mat-icon>
             My Profile
           </a>
+          <a mat-menu-item routerLink="/orders">
+            <mat-icon>receipt_long</mat-icon>
+            My Orders
+          </a>
           <a mat-menu-item routerLink="/cart">
             <mat-icon>shopping_bag</mat-icon>
             My Cart
@@ -111,6 +115,9 @@
       @if (authService.isAuthenticated()) {
         <a class="mobile-drawer__link" routerLink="/profile" (click)="closeMobileMenu()">
           <mat-icon>person_outline</mat-icon> My Profile
+        </a>
+        <a class="mobile-drawer__link" routerLink="/orders" (click)="closeMobileMenu()">
+          <mat-icon>receipt_long</mat-icon> My Orders
         </a>
         <a class="mobile-drawer__link" routerLink="/cart" (click)="closeMobileMenu()">
           <mat-icon>shopping_bag</mat-icon>

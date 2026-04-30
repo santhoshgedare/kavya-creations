@@ -193,6 +193,30 @@ public sealed class UpdateVariantCommandHandler(IApplicationDbContext db, ICurre
     }
 }
 
+// Bulk update variant pricing/stock
+public record BulkUpdateVariantItem(Guid Id, decimal Price, int StockQuantity);
+public record BulkUpdateVariantsCommand(List<BulkUpdateVariantItem> Variants) : IRequest;
+
+public sealed class BulkUpdateVariantsCommandHandler(IApplicationDbContext db, ICurrentUserService currentUser)
+    : IRequestHandler<BulkUpdateVariantsCommand>
+{
+    public async Task Handle(BulkUpdateVariantsCommand request, CancellationToken cancellationToken)
+    {
+        var ids = request.Variants.Select(v => v.Id).ToList();
+        var variants = await db.ProductVariants
+            .Where(v => ids.Contains(v.Id) && !v.IsDeleted)
+            .ToListAsync(cancellationToken);
+
+        foreach (var item in request.Variants)
+        {
+            var variant = variants.FirstOrDefault(v => v.Id == item.Id);
+            if (variant is not null)
+                variant.UpdatePricing(item.Price, item.StockQuantity, currentUser.Email ?? "system");
+        }
+        await db.SaveChangesAsync(cancellationToken);
+    }
+}
+
 // Delete variant
 public record DeleteVariantCommand(Guid Id) : IRequest;
 

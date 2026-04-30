@@ -1,0 +1,85 @@
+<div class="my-orders-page">
+  <div class="page-header">
+    <div class="header-left">
+      <a mat-button class="back-link" routerLink="/profile">
+        <mat-icon>arrow_back</mat-icon> My Profile
+      </a>
+      <h1>My Orders</h1>
+      @if (!loading() && totalCount() > 0) {
+        <p class="order-count">{{ totalCount() }} order{{ totalCount() !== 1 ? 's' : '' }} total</p>
+      }
+    </div>
+    <a mat-stroked-button routerLink="/products">
+      <mat-icon>diamond</mat-icon> Continue Shopping
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-center">
+      <mat-spinner diameter="52"></mat-spinner>
+    </div>
+  } @else if (orders().length === 0) {
+    <div class="empty-state">
+      <mat-icon>receipt_long</mat-icon>
+      <h2>No orders yet</h2>
+      <p>When you place your first order, it will appear here.</p>
+      <a mat-raised-button routerLink="/products">
+        <mat-icon>diamond</mat-icon> Browse Collections
+      </a>
+    </div>
+  } @else {
+    <div class="orders-list">
+      @for (order of orders(); track order.id) {
+        <a class="order-card" [routerLink]="['/orders', order.id]">
+          <div class="order-card__header">
+            <div class="order-number">
+              <mat-icon class="order-icon">receipt_long</mat-icon>
+              <span>{{ order.orderNumber }}</span>
+            </div>
+            <div class="order-badges">
+              <mat-chip-set>
+                <mat-chip [highlighted]="getStatusColor(order.status) === 'primary'">
+                  {{ getStatusLabel(order.status) }}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+          <div class="order-card__body">
+            <div class="order-meta">
+              <span class="meta-item">
+                <mat-icon>calendar_today</mat-icon>
+                {{ order.createdAt | date:'mediumDate' }}
+              </span>
+              <span class="meta-item">
+                <mat-icon>shopping_bag</mat-icon>
+                {{ order.itemCount }} item{{ order.itemCount !== 1 ? 's' : '' }}
+              </span>
+              <span class="meta-item payment-status"
+                    [class.paid]="order.paymentStatus === PaymentStatus.Paid"
+                    [class.pending]="order.paymentStatus === PaymentStatus.Pending"
+                    [class.failed]="order.paymentStatus === PaymentStatus.Failed">
+                <mat-icon>{{ order.paymentStatus === PaymentStatus.Paid ? 'check_circle' : 'schedule' }}</mat-icon>
+                {{ getPaymentLabel(order.paymentStatus) }}
+              </span>
+            </div>
+            <div class="order-total">
+              {{ order.totalAmount | currency:'INR':'symbol':'1.0-0' }}
+              <mat-icon class="chevron">chevron_right</mat-icon>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+
+    @if (totalCount() > pageSize) {
+      <mat-paginator
+        [length]="totalCount()"
+        [pageSize]="pageSize"
+        [pageIndex]="page() - 1"
+        [hidePageSize]="true"
+        (page)="onPageChange($event)"
+        class="paginator">
+      </mat-paginator>
+    }
+  }
+</div>

@@ -9,15 +9,25 @@
     </div>
   } @else {
     <div class="stats-grid">
-      <div class="stat-card">
+      <div class="stat-card stat-card--orders">
         <mat-icon class="stat-icon">receipt_long</mat-icon>
         <div class="stat-value">{{ totalOrders() }}</div>
         <div class="stat-label">Total Orders</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card stat-card--revenue">
+        <mat-icon class="stat-icon">currency_rupee</mat-icon>
+        <div class="stat-value">{{ totalRevenue() | currency:'INR':'symbol':'1.0-0' }}</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+      <div class="stat-card stat-card--products">
         <mat-icon class="stat-icon">diamond</mat-icon>
         <div class="stat-value">{{ totalProducts() }}</div>
         <div class="stat-label">Total Products</div>
+      </div>
+      <div class="stat-card stat-card--categories">
+        <mat-icon class="stat-icon">category</mat-icon>
+        <div class="stat-value">{{ totalCategories() }}</div>
+        <div class="stat-label">Categories</div>
       </div>
     </div>
 
@@ -30,6 +40,9 @@
       </a>
       <a mat-raised-button routerLink="/admin/categories">
         <mat-icon>category</mat-icon> Manage Categories
+      </a>
+      <a mat-raised-button routerLink="/admin/attributes">
+        <mat-icon>tune</mat-icon> Manage Attributes
       </a>
     </div>
 

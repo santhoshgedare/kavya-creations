@@ -14,6 +14,7 @@ public static class DataSeeder
         await SeedRolesAsync(roleManager);
         await SeedUsersAsync(userManager);
         await SeedCategoriesAsync(db);
+        await SeedAttributesAsync(db);
         await SeedProductsAsync(db);
     }
 
@@ -77,65 +78,144 @@ public static class DataSeeder
         await db.SaveChangesAsync();
     }
 
+    private static async Task SeedAttributesAsync(AppDbContext db)
+    {
+        if (await db.ProductAttributes.AnyAsync()) return;
+
+        // ── Create attributes ──────────────────────────────────────────────────
+        var metalType = ProductAttribute.Create("metal_type", "Metal Type", "select");
+        var size      = ProductAttribute.Create("size",       "Size",       "chips");
+        var finish    = ProductAttribute.Create("finish",     "Finish",     "select");
+
+        db.ProductAttributes.AddRange(metalType, size, finish);
+        await db.SaveChangesAsync();
+
+        // ── Attribute values ───────────────────────────────────────────────────
+        var metalValues = new[]
+        {
+            ProductAttributeValue.Create(metalType.Id, "gold_plated",   "Gold Plated",   0),
+            ProductAttributeValue.Create(metalType.Id, "silver_925",    "925 Silver",    1),
+            ProductAttributeValue.Create(metalType.Id, "rose_gold",     "Rose Gold",     2),
+            ProductAttributeValue.Create(metalType.Id, "oxidized",      "Oxidized",      3),
+            ProductAttributeValue.Create(metalType.Id, "brass",         "Brass",         4),
+        };
+        var sizeValues = new[]
+        {
+            ProductAttributeValue.Create(size.Id, "xs",         "XS",          0),
+            ProductAttributeValue.Create(size.Id, "s",          "S",           1),
+            ProductAttributeValue.Create(size.Id, "m",          "M",           2),
+            ProductAttributeValue.Create(size.Id, "l",          "L",           3),
+            ProductAttributeValue.Create(size.Id, "xl",         "XL",          4),
+            ProductAttributeValue.Create(size.Id, "free_size",  "Free Size",   5),
+        };
+        var finishValues = new[]
+        {
+            ProductAttributeValue.Create(finish.Id, "polished",   "Polished",    0),
+            ProductAttributeValue.Create(finish.Id, "matte",      "Matte",       1),
+            ProductAttributeValue.Create(finish.Id, "antique",    "Antique",     2),
+            ProductAttributeValue.Create(finish.Id, "textured",   "Textured",    3),
+        };
+
+        db.ProductAttributeValues.AddRange(metalValues);
+        db.ProductAttributeValues.AddRange(sizeValues);
+        db.ProductAttributeValues.AddRange(finishValues);
+        await db.SaveChangesAsync();
+
+        // ── Map attributes to categories ───────────────────────────────────────
+        var banglesId     = (await db.Categories.FirstAsync(c => c.Slug == "bangles")).Id;
+        var earringsId    = (await db.Categories.FirstAsync(c => c.Slug == "earrings")).Id;
+        var necklacesId   = (await db.Categories.FirstAsync(c => c.Slug == "necklaces")).Id;
+        var accessoriesId = (await db.Categories.FirstAsync(c => c.Slug == "accessories")).Id;
+
+        var mappings = new[]
+        {
+            // Bangles: Metal Type (required), Size, Finish
+            CategoryAttributeMapping.Create(banglesId,     metalType.Id, 0, isRequired: true),
+            CategoryAttributeMapping.Create(banglesId,     size.Id,      1),
+            CategoryAttributeMapping.Create(banglesId,     finish.Id,    2),
+            // Earrings: Metal Type (required), Finish
+            CategoryAttributeMapping.Create(earringsId,   metalType.Id, 0, isRequired: true),
+            CategoryAttributeMapping.Create(earringsId,   finish.Id,    1),
+            // Necklaces: Metal Type (required), Finish
+            CategoryAttributeMapping.Create(necklacesId,  metalType.Id, 0, isRequired: true),
+            CategoryAttributeMapping.Create(necklacesId,  finish.Id,    1),
+            // Accessories: Metal Type, Size, Finish
+            CategoryAttributeMapping.Create(accessoriesId, metalType.Id, 0, isRequired: true),
+            CategoryAttributeMapping.Create(accessoriesId, size.Id,      1),
+            CategoryAttributeMapping.Create(accessoriesId, finish.Id,    2),
+        };
+
+        db.CategoryAttributeMappings.AddRange(mappings);
+        await db.SaveChangesAsync();
+    }
+
     private static async Task SeedProductsAsync(AppDbContext db)
     {
         if (await db.Products.AnyAsync()) return;
 
-        var banglesId = (await db.Categories.FirstAsync(c => c.Slug == "bangles")).Id;
-        var earringsId = (await db.Categories.FirstAsync(c => c.Slug == "earrings")).Id;
-        var necklacesId = (await db.Categories.FirstAsync(c => c.Slug == "necklaces")).Id;
+        var banglesId     = (await db.Categories.FirstAsync(c => c.Slug == "bangles")).Id;
+        var earringsId    = (await db.Categories.FirstAsync(c => c.Slug == "earrings")).Id;
+        var necklacesId   = (await db.Categories.FirstAsync(c => c.Slug == "necklaces")).Id;
         var accessoriesId = (await db.Categories.FirstAsync(c => c.Slug == "accessories")).Id;
 
-        var products = new[]
+        var productSeeds = new[]
         {
-            CreateProduct("Golden Filigree Bangle Set", "golden-filigree-bangle-set",
-                "A stunning set of 6 handcrafted gold-plated bangles with intricate filigree work. Each bangle is individually crafted by skilled artisans using traditional techniques passed down through generations.",
-                "Set of 6 gold-plated filigree bangles", 1299, banglesId, "Gold-plated Brass", true,
-                "https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=800"),
-            CreateProduct("Silver Oxidized Bangle", "silver-oxidized-bangle",
-                "Traditional oxidized silver bangle with floral motifs. Handcrafted by tribal artisans from Rajasthan using antique silver techniques.",
-                "Oxidized silver bangle with floral motifs", 849, banglesId, "Oxidized Silver", false,
-                "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=800"),
-            CreateProduct("Kundan Embellished Bangle", "kundan-embellished-bangle",
-                "Elegant bangle adorned with kundan stones in emerald and ruby. A statement piece for festive occasions and weddings.",
-                "Kundan stone embellished gold bangle", 2199, banglesId, "22kt Gold-plated", true,
-                "https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?w=800"),
-            CreateProduct("Jhumka Drop Earrings", "jhumka-drop-earrings",
-                "Classic Indian jhumka earrings with intricate bell-shaped drops. Handcrafted in gold-plated brass with tiny pearl accents.",
-                "Gold-plated jhumka earrings with pearls", 699, earringsId, "Gold-plated Brass", true,
-                "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800"),
-            CreateProduct("Silver Chandbali Earrings", "silver-chandbali-earrings",
-                "Moon-shaped chandbali earrings in pure silver with delicate engravings. A timeless design that complements both traditional and fusion outfits.",
-                "Pure silver chandbali earrings", 1149, earringsId, "925 Sterling Silver", false,
-                "https://images.unsplash.com/photo-1629224316810-9d8805b95e76?w=800"),
-            CreateProduct("Kolhapuri Necklace", "kolhapuri-necklace",
-                "Authentic Kolhapuri-style necklace with multiple gold-plated strands and traditional coin pendants. Handcrafted in Maharashtra.",
-                "Traditional Kolhapuri multi-strand necklace", 3499, necklacesId, "Gold-plated Brass", true,
-                "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=800"),
-            CreateProduct("Temple Jewellery Necklace", "temple-jewellery-necklace",
-                "Inspired by South Indian temple art, this necklace features deities and floral motifs in gold plating. Perfect for classical dance and weddings.",
-                "South Indian temple jewellery necklace", 4599, necklacesId, "Gold-plated Copper", true,
-                "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800"),
-            CreateProduct("Meenakari Ring", "meenakari-ring",
-                "Vibrant enamel ring with traditional Meenakari artwork in blue and red. Each piece is hand-painted by artisans from Jaipur.",
-                "Handpainted Meenakari enamel ring", 549, accessoriesId, "Silver with Enamel", false,
-                "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800"),
-            CreateProduct("Oxidized Anklet Pair", "oxidized-anklet-pair",
-                "Pair of oxidized silver anklets with tiny bells and leaf motifs. Handcrafted to produce a melodious sound with every step.",
-                "Oxidized silver anklet pair with bells", 449, accessoriesId, "Oxidized Silver", false,
-                "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800"),
+            (Name: "Golden Filigree Bangle Set",   Slug: "golden-filigree-bangle-set",
+             Desc: "A stunning set of 6 handcrafted gold-plated bangles with intricate filigree work. Each bangle is individually crafted by skilled artisans using traditional techniques passed down through generations.",
+             Short: "Set of 6 gold-plated filigree bangles", Price: 1299m, CatId: banglesId,
+             Material: "Gold-plated Brass", Featured: true,
+             Image: "https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=800"),
+            (Name: "Silver Oxidized Bangle",        Slug: "silver-oxidized-bangle",
+             Desc: "Traditional oxidized silver bangle with floral motifs. Handcrafted by tribal artisans from Rajasthan using antique silver techniques.",
+             Short: "Oxidized silver bangle with floral motifs", Price: 849m, CatId: banglesId,
+             Material: "Oxidized Silver", Featured: false,
+             Image: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=800"),
+            (Name: "Kundan Embellished Bangle",     Slug: "kundan-embellished-bangle",
+             Desc: "Elegant bangle adorned with kundan stones in emerald and ruby. A statement piece for festive occasions and weddings.",
+             Short: "Kundan stone embellished gold bangle", Price: 2199m, CatId: banglesId,
+             Material: "22kt Gold-plated", Featured: true,
+             Image: "https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?w=800"),
+            (Name: "Jhumka Drop Earrings",           Slug: "jhumka-drop-earrings",
+             Desc: "Classic Indian jhumka earrings with intricate bell-shaped drops. Handcrafted in gold-plated brass with tiny pearl accents.",
+             Short: "Gold-plated jhumka earrings with pearls", Price: 699m, CatId: earringsId,
+             Material: "Gold-plated Brass", Featured: true,
+             Image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800"),
+            (Name: "Silver Chandbali Earrings",      Slug: "silver-chandbali-earrings",
+             Desc: "Moon-shaped chandbali earrings in pure silver with delicate engravings. A timeless design that complements both traditional and fusion outfits.",
+             Short: "Pure silver chandbali earrings", Price: 1149m, CatId: earringsId,
+             Material: "925 Sterling Silver", Featured: false,
+             Image: "https://images.unsplash.com/photo-1629224316810-9d8805b95e76?w=800"),
+            (Name: "Kolhapuri Necklace",             Slug: "kolhapuri-necklace",
+             Desc: "Authentic Kolhapuri-style necklace with multiple gold-plated strands and traditional coin pendants. Handcrafted in Maharashtra.",
+             Short: "Traditional Kolhapuri multi-strand necklace", Price: 3499m, CatId: necklacesId,
+             Material: "Gold-plated Brass", Featured: true,
+             Image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=800"),
+            (Name: "Temple Jewellery Necklace",      Slug: "temple-jewellery-necklace",
+             Desc: "Inspired by South Indian temple art, this necklace features deities and floral motifs in gold plating. Perfect for classical dance and weddings.",
+             Short: "South Indian temple jewellery necklace", Price: 4599m, CatId: necklacesId,
+             Material: "Gold-plated Copper", Featured: true,
+             Image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800"),
+            (Name: "Meenakari Ring",                 Slug: "meenakari-ring",
+             Desc: "Vibrant enamel ring with traditional Meenakari artwork in blue and red. Each piece is hand-painted by artisans from Jaipur.",
+             Short: "Handpainted Meenakari enamel ring", Price: 549m, CatId: accessoriesId,
+             Material: "Silver with Enamel", Featured: false,
+             Image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800"),
+            (Name: "Oxidized Anklet Pair",           Slug: "oxidized-anklet-pair",
+             Desc: "Pair of oxidized silver anklets with tiny bells and leaf motifs. Handcrafted to produce a melodious sound with every step.",
+             Short: "Oxidized silver anklet pair with bells", Price: 449m, CatId: accessoriesId,
+             Material: "Oxidized Silver", Featured: false,
+             Image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800"),
         };
 
-        db.Products.AddRange(products);
-        await db.SaveChangesAsync();
-    }
+        foreach (var s in productSeeds)
+        {
+            var product = Product.Create(s.Name, s.Slug, s.Desc, s.Price, 25, s.CatId, s.Material, s.Short);
+            product.SetFeatured(s.Featured, "seed");
+            db.Products.Add(product);
+            await db.SaveChangesAsync();
 
-    private static Product CreateProduct(
-        string name, string slug, string description, string shortDescription,
-        decimal price, Guid categoryId, string material, bool featured, string imageUrl)
-    {
-        var product = Product.Create(name, slug, description, price, 25, categoryId, material, shortDescription);
-        product.SetFeatured(featured, "seed");
-        return product;
+            db.ProductImages.Add(ProductImage.Create(product.Id, s.Image, isPrimary: true, altText: s.Name));
+        }
+        await db.SaveChangesAsync();
     }
 }

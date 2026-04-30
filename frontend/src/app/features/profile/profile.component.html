@@ -108,10 +108,15 @@
 
     <!-- Order History -->
     <div class="orders-card">
-      <h3>
-        <mat-icon>receipt_long</mat-icon>
-        Order History
-      </h3>
+      <div class="card-header">
+        <h3>
+          <mat-icon>receipt_long</mat-icon>
+          Recent Orders
+        </h3>
+        <a mat-stroked-button routerLink="/orders" class="view-all-btn">
+          View All <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
       @if (ordersLoading()) {
         <div class="loading-center">
           <mat-spinner diameter="36"></mat-spinner>

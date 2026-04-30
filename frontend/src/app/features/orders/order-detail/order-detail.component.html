@@ -6,8 +6,8 @@
   <div class="order-detail-page">
     <div class="order-header">
       <div>
-        <a mat-button class="back-link" routerLink="/profile">
-          <mat-icon>arrow_back</mat-icon> Back to Orders
+        <a mat-button class="back-link" routerLink="/orders">
+          <mat-icon>arrow_back</mat-icon> My Orders
         </a>
         <h1>Order #{{ o.orderNumber }}</h1>
         <p class="order-date">Placed on {{ o.createdAt | date:'longDate' }}</p>
@@ -79,6 +79,6 @@
   <div class="not-found">
     <mat-icon>search_off</mat-icon>
     <h2>Order not found</h2>
-    <a mat-raised-button routerLink="/profile">My Orders</a>
+    <a mat-raised-button routerLink="/orders">My Orders</a>
   </div>
 }

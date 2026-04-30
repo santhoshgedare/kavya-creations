@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { OrderService } from '../../../core/services/order.service';
-import { ProductService } from '../../../core/services/product.service';
 import { OrderListItem } from '../../../core/models/order.model';
 
 @Component({
@@ -18,20 +17,27 @@ import { OrderListItem } from '../../../core/models/order.model';
 })
 export class AdminDashboardComponent implements OnInit {
   private readonly orderService = inject(OrderService);
-  private readonly productService = inject(ProductService);
 
   totalOrders = signal(0);
   totalProducts = signal(0);
+  totalRevenue = signal(0);
+  totalCategories = signal(0);
   recentOrders = signal<OrderListItem[]>([]);
   loading = signal(true);
 
   ngOnInit(): void {
-    this.orderService.getAllOrders(1, 5).subscribe({
-      next: (r) => { this.totalOrders.set(r.totalCount); this.recentOrders.set(r.items); this.loading.set(false); },
+    this.orderService.getAdminStats().subscribe({
+      next: (stats) => {
+        this.totalOrders.set(stats.totalOrders);
+        this.totalProducts.set(stats.totalProducts);
+        this.totalRevenue.set(stats.totalRevenue);
+        this.totalCategories.set(stats.totalCategories);
+        this.loading.set(false);
+      },
       error: () => this.loading.set(false),
     });
-    this.productService.getProducts({ pageSize: 1 }).subscribe({
-      next: (r) => this.totalProducts.set(r.totalCount),
+    this.orderService.getAllOrders(1, 5).subscribe({
+      next: (r) => this.recentOrders.set(r.items),
     });
   }
 }
