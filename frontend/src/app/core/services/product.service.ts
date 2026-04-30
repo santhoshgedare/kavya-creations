@@ -55,4 +55,14 @@ export class ProductService {
   createCategory(data: Partial<Category>): Observable<string> {
     return this.http.post<string>(`${this.baseUrl}/categories`, data);
   }
+
+  uploadImages(files: File[]): Observable<string[]> {
+    const formData = new FormData();
+    files.forEach(file => formData.append('files', file, file.name));
+    return this.http.post<string[]>(`${this.baseUrl}/images/upload`, formData);
+  }
+
+  deleteImage(path: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/images`, { params: { path } });
+  }
 }

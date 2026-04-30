@@ -71,6 +71,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddSingleton<ICacheService, MemoryCacheService>();
         services.AddMemoryCache();
+        services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
         // Email settings
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));

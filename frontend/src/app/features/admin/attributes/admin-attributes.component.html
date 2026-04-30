@@ -1,0 +1,118 @@
+<div class="admin-attributes-page">
+  <h1>Manage Attributes</h1>
+
+  <!-- Create Attribute Form -->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>Add New Attribute</mat-panel-title>
+    </mat-expansion-panel-header>
+    <form [formGroup]="attributeForm" (ngSubmit)="createAttribute()" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+      <mat-form-field appearance="outline">
+        <mat-label>Name (internal)</mat-label>
+        <input matInput formControlName="name" placeholder="e.g. size">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Display Name</mat-label>
+        <input matInput formControlName="displayName" placeholder="e.g. Size">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Input Type</mat-label>
+        <mat-select formControlName="inputType">
+          <mat-option value="select">Select</mat-option>
+          <mat-option value="chips">Chips</mat-option>
+          <mat-option value="radio">Radio</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="attributeForm.invalid">Create</button>
+    </form>
+  </mat-expansion-panel>
+
+  <!-- Map Attribute to Category -->
+  <mat-expansion-panel style="margin-top:16px">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Map Attribute to Category</mat-panel-title>
+    </mat-expansion-panel-header>
+    <form [formGroup]="mappingForm" (ngSubmit)="mapToCategory()" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="categoryId">
+          @for (cat of categories(); track cat.id) {
+            <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Attribute</mat-label>
+        <mat-select formControlName="attributeId">
+          @for (attr of attributes(); track attr.id) {
+            <mat-option [value]="attr.id">{{ attr.displayName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width:100px">
+        <mat-label>Display Order</mat-label>
+        <input matInput type="number" formControlName="displayOrder">
+      </mat-form-field>
+      <mat-checkbox formControlName="isRequired" style="margin-top:16px">Required</mat-checkbox>
+      <button mat-raised-button color="accent" type="submit" [disabled]="mappingForm.invalid" style="margin-top:8px">Map</button>
+    </form>
+  </mat-expansion-panel>
+
+  <!-- Attributes List -->
+  <div class="attributes-list" style="margin-top:24px">
+    @if (loading()) {
+      <mat-spinner diameter="40"></mat-spinner>
+    } @else {
+      @for (attr of attributes(); track attr.id) {
+        <mat-expansion-panel style="margin-bottom:8px">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ attr.displayName }}</mat-panel-title>
+            <mat-panel-description>{{ attr.name }} &bull; {{ attr.inputType }} &bull; {{ attr.values.length }} values</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <button mat-icon-button color="warn" (click)="deleteAttribute(attr.id)" title="Delete attribute">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-stroked-button (click)="selectAttribute(attr)">Manage Values</button>
+          </div>
+
+          <div class="values-list">
+            @for (val of attr.values; track val.id) {
+              <div class="value-row" style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                <span style="flex:1">{{ val.displayValue }} ({{ val.value }})</span>
+                <span style="color:#999;font-size:12px">order: {{ val.displayOrder }}</span>
+                <button mat-icon-button color="warn" (click)="deleteValue(val.id)" title="Delete value">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        </mat-expansion-panel>
+      }
+    }
+  </div>
+
+  <!-- Add Value Form (shown when attribute selected) -->
+  @if (selectedAttribute()) {
+    <div class="add-value-panel" style="margin-top:24px;padding:16px;border:1px solid #e0e0e0;border-radius:8px">
+      <h3>Add Value to: {{ selectedAttribute()!.displayName }}</h3>
+      <form [formGroup]="valueForm" (ngSubmit)="addValue()" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+        <mat-form-field appearance="outline">
+          <mat-label>Value (internal)</mat-label>
+          <input matInput formControlName="value" placeholder="e.g. S">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Display Value</mat-label>
+          <input matInput formControlName="displayValue" placeholder="e.g. Small">
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="width:100px">
+          <mat-label>Order</mat-label>
+          <input matInput type="number" formControlName="displayOrder">
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit" [disabled]="valueForm.invalid">Add Value</button>
+        <button mat-button type="button" (click)="selectedAttribute.set(null)">Cancel</button>
+      </form>
+    </div>
+  }
+</div>

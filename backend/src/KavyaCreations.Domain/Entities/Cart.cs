@@ -17,9 +17,9 @@ public class Cart : BaseEntity
 
     public static Cart Create(Guid userId) => new() { UserId = userId };
 
-    public CartItem AddItem(Guid productId, int quantity)
+    public CartItem AddItem(Guid productId, int quantity, Guid? variantId = null)
     {
-        var existing = Items.FirstOrDefault(i => i.ProductId == productId);
+        var existing = Items.FirstOrDefault(i => i.ProductId == productId && i.VariantId == variantId);
         if (existing is not null)
         {
             existing.UpdateQuantity(existing.Quantity + quantity);
@@ -27,24 +27,24 @@ public class Cart : BaseEntity
             return existing;
         }
 
-        var item = CartItem.Create(Id, productId, quantity);
+        var item = CartItem.Create(Id, productId, quantity, variantId);
         ((List<CartItem>)Items).Add(item);
         SetAudit(UserId.ToString());
         return item;
     }
 
-    public void UpdateItemQuantity(Guid productId, int quantity)
+    public void UpdateItemQuantity(Guid productId, int quantity, Guid? variantId = null)
     {
-        var item = Items.FirstOrDefault(i => i.ProductId == productId)
+        var item = Items.FirstOrDefault(i => i.ProductId == productId && i.VariantId == variantId)
             ?? throw new InvalidOperationException("Item not in cart.");
-        if (quantity <= 0) RemoveItem(productId);
+        if (quantity <= 0) RemoveItem(productId, variantId);
         else item.UpdateQuantity(quantity);
         SetAudit(UserId.ToString());
     }
 
-    public void RemoveItem(Guid productId)
+    public void RemoveItem(Guid productId, Guid? variantId = null)
     {
-        var item = Items.FirstOrDefault(i => i.ProductId == productId);
+        var item = Items.FirstOrDefault(i => i.ProductId == productId && i.VariantId == variantId);
         if (item is not null)
         {
             ((List<CartItem>)Items).Remove(item);
