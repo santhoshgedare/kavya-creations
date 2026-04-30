@@ -37,11 +37,9 @@
               <span>{{ order.orderNumber }}</span>
             </div>
             <div class="order-badges">
-              <mat-chip-set>
-                <mat-chip [highlighted]="getStatusColor(order.status) === 'primary'">
-                  {{ getStatusLabel(order.status) }}
-                </mat-chip>
-              </mat-chip-set>
+              <span class="status-badge status-{{ getStatusColor(order.status) }}">
+                {{ getStatusLabel(order.status) }}
+              </span>
             </div>
           </div>
           <div class="order-card__body">

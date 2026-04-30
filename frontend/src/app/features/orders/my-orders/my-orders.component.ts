@@ -4,7 +4,6 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { OrderService } from '../../../core/services/order.service';
@@ -16,7 +15,7 @@ import { OrderListItem, OrderStatus, PaymentStatus } from '../../../core/models/
   imports: [
     RouterLink, CurrencyPipe, DatePipe,
     MatCardModule, MatButtonModule, MatIconModule,
-    MatChipsModule, MatProgressSpinnerModule, MatPaginatorModule,
+    MatProgressSpinnerModule, MatPaginatorModule,
   ],
   templateUrl: './my-orders.component.html',
   styleUrl: './my-orders.component.scss',

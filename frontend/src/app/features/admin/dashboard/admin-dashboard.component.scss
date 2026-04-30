@@ -109,7 +109,7 @@
     &:hover { background: var(--kc-primary-light) !important; }
   }
 
-  a:nth-child(4) {
+  .link-accent {
     background: var(--kc-accent) !important;
     color: white !important;
     &:hover { background: var(--kc-accent-dark) !important; }

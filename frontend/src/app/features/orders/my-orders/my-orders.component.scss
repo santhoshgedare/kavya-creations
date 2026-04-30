@@ -115,6 +115,27 @@
   flex-wrap: wrap;
 }
 
+.order-badges {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+
+  &.status-default  { background: #eeeeee; color: #555; }
+  &.status-primary  { background: #ede7f6; color: #6750a4; }
+  &.status-accent   { background: #e3f2fd; color: #1565c0; }
+  &.status-warn     { background: #ffebee; color: #c62828; }
+}
+
 .order-number {
   display: flex;
   align-items: center;

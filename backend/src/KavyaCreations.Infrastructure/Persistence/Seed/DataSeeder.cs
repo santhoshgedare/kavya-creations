@@ -207,15 +207,19 @@ public static class DataSeeder
              Image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800"),
         };
 
-        foreach (var s in productSeeds)
+        var products = productSeeds.Select(s =>
         {
             var product = Product.Create(s.Name, s.Slug, s.Desc, s.Price, 25, s.CatId, s.Material, s.Short);
             product.SetFeatured(s.Featured, "seed");
-            db.Products.Add(product);
-            await db.SaveChangesAsync();
+            return (product, s.Image, s.Name);
+        }).ToList();
 
-            db.ProductImages.Add(ProductImage.Create(product.Id, s.Image, isPrimary: true, altText: s.Name));
-        }
+        db.Products.AddRange(products.Select(p => p.product));
+        await db.SaveChangesAsync();
+
+        foreach (var (product, imageUrl, name) in products)
+            db.ProductImages.Add(ProductImage.Create(product.Id, imageUrl, isPrimary: true, altText: name));
+
         await db.SaveChangesAsync();
     }
 }
