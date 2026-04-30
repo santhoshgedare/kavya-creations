@@ -59,7 +59,7 @@ public sealed class RegisterCommandHandler(
         var accessToken = jwtService.GenerateAccessToken(user.Id, user.Email!, roles);
         return new AuthResponseDto(
             accessToken, refreshToken, DateTime.UtcNow.AddHours(1),
-            new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, roles.ToList()));
+            new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, user.PhoneNumber, roles.ToList()));
     }
 }
 
@@ -95,7 +95,7 @@ public sealed class LoginCommandHandler(
         var accessToken = jwtService.GenerateAccessToken(user.Id, user.Email!, roles);
         return new AuthResponseDto(
             accessToken, refreshToken, DateTime.UtcNow.AddHours(1),
-            new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, roles.ToList()));
+            new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, user.PhoneNumber, roles.ToList()));
     }
 }
 
@@ -127,7 +127,7 @@ public sealed class RefreshTokenCommandHandler(
         var accessToken = jwtService.GenerateAccessToken(user.Id, user.Email!, roles);
         return new AuthResponseDto(
             accessToken, newRefresh, DateTime.UtcNow.AddHours(1),
-            new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, roles.ToList()));
+            new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, user.PhoneNumber, roles.ToList()));
     }
 }
 
@@ -179,9 +179,10 @@ public sealed class UpdateProfileCommandHandler(UserManager<ApplicationUser> use
             ?? throw new NotFoundException("User", request.UserId);
 
         user.UpdateProfile(request.Request.FirstName, request.Request.LastName, request.Request.ProfileImageUrl);
+        user.PhoneNumber = request.Request.PhoneNumber;
         await userManager.UpdateAsync(user);
 
         var roles = await userManager.GetRolesAsync(user);
-        return new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, roles.ToList());
+        return new UserProfileDto(user.Id, user.FirstName, user.LastName, user.Email!, user.ProfileImageUrl, user.PhoneNumber, roles.ToList());
     }
 }

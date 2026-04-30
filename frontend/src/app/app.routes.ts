@@ -80,6 +80,10 @@ export const routes: Routes = [
       {
         path: 'variants',
         loadComponent: () => import('./features/admin/variants/admin-variants.component').then(m => m.AdminVariantsComponent)
+      },
+      {
+        path: 'categories',
+        loadComponent: () => import('./features/admin/categories/admin-categories.component').then(m => m.AdminCategoriesComponent)
       }
     ]
   },

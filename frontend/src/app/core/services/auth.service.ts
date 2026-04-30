@@ -66,8 +66,8 @@ export class AuthService {
     );
   }
 
-  updateProfile(firstName: string, lastName: string, profileImageUrl?: string): Observable<User> {
-    return this.http.put<User>(`${this.baseUrl}/profile`, { firstName, lastName, profileImageUrl }).pipe(
+  updateProfile(firstName: string, lastName: string, profileImageUrl?: string, phoneNumber?: string): Observable<User> {
+    return this.http.put<User>(`${this.baseUrl}/profile`, { firstName, lastName, profileImageUrl, phoneNumber }).pipe(
       tap(user => {
         this._currentUser.set(user);
         localStorage.setItem('current_user', JSON.stringify(user));
