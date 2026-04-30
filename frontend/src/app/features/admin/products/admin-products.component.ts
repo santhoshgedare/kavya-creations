@@ -614,7 +614,9 @@ export class AdminProductsComponent implements OnInit {
   private saveVariants(productId: string, variants: VariantRow[]): void {
     for (const v of variants) {
       if (v.existingVariantId) {
-        this.variantService.updateVariant(v.existingVariantId, { price: v.price, stockQuantity: v.stock }).subscribe();
+        this.variantService.updateVariant(v.existingVariantId, { price: v.price, stockQuantity: v.stock }).subscribe({
+          error: () => this.snackBar.open(`Failed to update variant "${v.displayLabel}"`, 'Close', { duration: 3000 }),
+        });
       } else {
         this.variantService.createVariant({
           productId,
@@ -622,7 +624,9 @@ export class AdminProductsComponent implements OnInit {
           price: v.price,
           stockQuantity: v.stock,
           attributeValueIds: v.attributeValueIds,
-        }).subscribe();
+        }).subscribe({
+          error: () => this.snackBar.open(`Failed to save variant "${v.displayLabel}"`, 'Close', { duration: 3000 }),
+        });
       }
     }
   }

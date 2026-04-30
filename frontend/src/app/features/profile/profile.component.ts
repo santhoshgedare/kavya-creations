@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
   profileForm = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    phoneNumber: ['', [Validators.pattern(/^[+]?[\d\s\-()\u0020]{7,15}$/)]],
+    phoneNumber: ['', [Validators.pattern(/^[+]?[\d\s\-()]{7,15}$/)]],
   });
 
   ngOnInit(): void {
