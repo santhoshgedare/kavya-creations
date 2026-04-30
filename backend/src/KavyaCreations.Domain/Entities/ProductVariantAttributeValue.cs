@@ -7,4 +7,7 @@ public class ProductVariantAttributeValue
 
     public ProductVariant Variant { get; set; } = null!;
     public ProductAttributeValue AttributeValue { get; set; } = null!;
+
+    public static ProductVariantAttributeValue Create(Guid variantId, Guid attributeValueId)
+        => new() { VariantId = variantId, AttributeValueId = attributeValueId };
 }

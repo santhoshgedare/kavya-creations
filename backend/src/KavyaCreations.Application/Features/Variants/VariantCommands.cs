@@ -125,11 +125,8 @@ public sealed class GenerateVariantsCommandHandler(IApplicationDbContext db)
 
             foreach (var val in combo)
             {
-                db.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
-                {
-                    VariantId = variant.Id,
-                    AttributeValueId = val.Id
-                });
+                db.ProductVariantAttributeValues.Add(
+                    ProductVariantAttributeValue.Create(variant.Id, val.Id));
             }
             await db.SaveChangesAsync(cancellationToken);
             createdIds.Add(variant.Id);
@@ -172,11 +169,8 @@ public sealed class CreateVariantCommandHandler(IApplicationDbContext db)
 
         foreach (var valueId in request.AttributeValueIds)
         {
-            db.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
-            {
-                VariantId = variant.Id,
-                AttributeValueId = valueId
-            });
+            db.ProductVariantAttributeValues.Add(
+                ProductVariantAttributeValue.Create(variant.Id, valueId));
         }
         await db.SaveChangesAsync(cancellationToken);
         return variant.Id;

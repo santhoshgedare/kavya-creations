@@ -38,11 +38,11 @@ export class VariantService {
   }
 
   addAttributeValue(attributeId: string, data: { value: string; displayValue: string; displayOrder: number }): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/attributes/${attributeId}/values`, { attributeId, ...data });
+    return this.http.post<string>(`${this.baseUrl}/attributes/${attributeId}/values`, data);
   }
 
   updateAttributeValue(valueId: string, data: { value: string; displayValue: string; displayOrder: number }): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/attributes/values/${valueId}`, { id: valueId, ...data });
+    return this.http.put<void>(`${this.baseUrl}/attributes/values/${valueId}`, data);
   }
 
   deleteAttributeValue(valueId: string): Observable<void> {
@@ -66,7 +66,7 @@ export class VariantService {
   }
 
   updateVariant(variantId: string, data: { price: number; stockQuantity: number }): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/variants/${variantId}`, { id: variantId, ...data });
+    return this.http.put<void>(`${this.baseUrl}/variants/${variantId}`, data);
   }
 
   deleteVariant(variantId: string): Observable<void> {
