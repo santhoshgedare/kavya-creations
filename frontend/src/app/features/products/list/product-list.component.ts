@@ -131,4 +131,9 @@ export class ProductListComponent implements OnInit {
     this.filterForm.reset({ search: '', category: '', minPrice: null, maxPrice: null, sortBy: 'createdAt', sortDir: 'desc' });
     this.page.set(1);
   }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/placeholder.jpg';
+  }
 }

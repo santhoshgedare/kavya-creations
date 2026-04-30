@@ -266,7 +266,24 @@ a:hover { color: var(--kc-primary-light); }
   }
 }
 
-// ─── Scrollbar ──────────────────────────────────────────────────────────────
+// ─── Lightbox dialog panel ──────────────────────────────────────────────────
+.lightbox-dialog-panel {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: var(--radius-lg) !important;
+    overflow: hidden !important;
+    background: transparent !important;
+
+    .mdc-dialog__container {
+      background: transparent !important;
+    }
+
+    .mat-mdc-dialog-surface {
+      background: transparent !important;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7) !important;
+    }
+  }
+}
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--kc-surface-alt); }
 ::-webkit-scrollbar-thumb { background: var(--kc-border); border-radius: 3px; }

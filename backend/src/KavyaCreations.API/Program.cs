@@ -105,6 +105,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseIpRateLimiting();
 app.UseCors("AllowAngular");
