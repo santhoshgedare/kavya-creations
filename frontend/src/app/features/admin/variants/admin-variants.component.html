@@ -1,26 +1,27 @@
 <div class="admin-variants-page">
-  <h1>Manage Product Variants</h1>
-
-  <!-- Select Product -->
-  <div style="margin-bottom:24px">
-    <mat-form-field appearance="outline" style="min-width:300px">
-      <mat-label>Select Product</mat-label>
-      <mat-select (valueChange)="onProductSelect($event)">
-        @for (product of products(); track product.id) {
-          <mat-option [value]="product.id">{{ product.name }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+  <div class="page-header">
+    <h1>Variant Pricing</h1>
+    <p class="page-subtitle">Manage prices and stock for product variants</p>
   </div>
 
-  @if (selectedProductId()) {
-    <!-- Generate Variants Form -->
-    <div style="padding:16px;border:1px solid #e0e0e0;border-radius:8px;margin-bottom:24px">
-      <h3>Generate Variants (Cartesian Product)</h3>
-      <form [formGroup]="generateForm" (ngSubmit)="generateVariants()">
-        <input type="hidden" formControlName="productId" [value]="selectedProductId()">
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
-          <mat-form-field appearance="outline">
+  <!-- Product selector + generate form -->
+  <div class="controls-card">
+    <div class="controls-row">
+      <mat-form-field appearance="outline" class="product-select">
+        <mat-label>Select Product</mat-label>
+        <mat-select (valueChange)="onProductSelect($event)">
+          @for (product of products(); track product.id) {
+            <mat-option [value]="product.id">{{ product.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    @if (selectedProductId()) {
+      <div class="generate-section">
+        <h3 class="section-label">Generate Variants (Cartesian Product)</h3>
+        <form [formGroup]="generateForm" (ngSubmit)="generateVariants()" class="generate-form">
+          <mat-form-field appearance="outline" class="values-field">
             <mat-label>Select Attribute Values</mat-label>
             <mat-select formControlName="attributeValueIds" multiple>
               @for (item of getAllValues(); track item.id) {
@@ -28,101 +29,112 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field appearance="outline" style="width:140px">
+          <mat-form-field appearance="outline" class="small-field">
             <mat-label>Default Price (₹)</mat-label>
             <input matInput type="number" formControlName="defaultPrice">
           </mat-form-field>
-          <mat-form-field appearance="outline" style="width:120px">
+          <mat-form-field appearance="outline" class="small-field">
             <mat-label>Default Stock</mat-label>
             <input matInput type="number" formControlName="defaultStock">
           </mat-form-field>
-          <button mat-raised-button color="primary" type="submit"
-                  [disabled]="generateForm.invalid"
-                  style="margin-top:8px">
-            Generate
+          <button mat-raised-button color="primary" type="submit" [disabled]="generateForm.invalid">
+            <mat-icon>auto_awesome</mat-icon> Generate
           </button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    }
+  </div>
 
-    <!-- Variants Table -->
+  @if (selectedProductId()) {
+    <!-- Variants table -->
     @if (loading()) {
-      <mat-spinner diameter="40"></mat-spinner>
-    } @else if (variants().length > 0) {
-      <table mat-table [dataSource]="variants()" style="width:100%">
-        <ng-container matColumnDef="sku">
-          <th mat-header-cell *matHeaderCellDef>SKU</th>
-          <td mat-cell *matCellDef="let v">{{ v.sku }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="price">
-          <th mat-header-cell *matHeaderCellDef>Price</th>
-          <td mat-cell *matCellDef="let v">
-            @if (editingVariantId() === v.id) {
-              <mat-form-field appearance="outline" style="width:100px">
-                <input matInput type="number" [formControl]="editForm.controls.price">
-              </mat-form-field>
-            } @else {
-              {{ v.price | currency:'INR':'symbol':'1.0-0' }}
-            }
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="stock">
-          <th mat-header-cell *matHeaderCellDef>Stock</th>
-          <td mat-cell *matCellDef="let v">
-            @if (editingVariantId() === v.id) {
-              <mat-form-field appearance="outline" style="width:90px">
-                <input matInput type="number" [formControl]="editForm.controls.stockQuantity">
-              </mat-form-field>
-            } @else {
-              {{ v.stockQuantity }}
-            }
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="available">
-          <th mat-header-cell *matHeaderCellDef>Available</th>
-          <td mat-cell *matCellDef="let v">
-            <mat-icon [style.color]="v.isAvailable ? 'green' : 'red'">
-              {{ v.isAvailable ? 'check_circle' : 'cancel' }}
-            </mat-icon>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="attributes">
-          <th mat-header-cell *matHeaderCellDef>Attributes</th>
-          <td mat-cell *matCellDef="let v">{{ getVariantAttributeLabel(v) }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let v">
-            @if (editingVariantId() === v.id) {
-              <button mat-icon-button color="primary" (click)="saveEdit(v.id)" title="Save">
+      <div class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+    } @else if (variantRows().length > 0) {
+      <div class="table-card">
+        <div class="table-header">
+          <h2>Variants ({{ variantRows().length }})</h2>
+          @if (hasDirtyRows) {
+            <button mat-raised-button color="primary" (click)="saveAll()" [disabled]="saving()">
+              @if (saving()) {
+                <mat-spinner diameter="18"></mat-spinner>
+              } @else {
                 <mat-icon>save</mat-icon>
-              </button>
-              <button mat-icon-button (click)="cancelEdit()" title="Cancel">
-                <mat-icon>cancel</mat-icon>
-              </button>
-            } @else {
-              <button mat-icon-button (click)="startEdit(v)" title="Edit">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="deleteVariant(v.id)" title="Delete">
-                <mat-icon>delete</mat-icon>
-              </button>
-            }
-          </td>
-        </ng-container>
+              }
+              Save All Changes
+            </button>
+          }
+        </div>
 
-        <tr mat-header-row *matHeaderRowDef="variantColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: variantColumns;"></tr>
-      </table>
+        <table mat-table [dataSource]="variantRows()" class="variants-table">
+          <ng-container matColumnDef="attributes">
+            <th mat-header-cell *matHeaderCellDef>Variant</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="attr-label">{{ row.attributeLabel || row.sku }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="sku">
+            <th mat-header-cell *matHeaderCellDef>SKU</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="sku-label">{{ row.sku }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef>Price (₹)</th>
+            <td mat-cell *matCellDef="let row">
+              <input class="inline-input price-input"
+                     type="number"
+                     [value]="row.price"
+                     (change)="updatePrice(row, $any($event.target).value)"
+                     [class.dirty]="row.dirty">
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="stock">
+            <th mat-header-cell *matHeaderCellDef>Stock</th>
+            <td mat-cell *matCellDef="let row">
+              <input class="inline-input stock-input"
+                     type="number"
+                     [value]="row.stockQuantity"
+                     (change)="updateStock(row, $any($event.target).value)"
+                     [class.dirty]="row.dirty">
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="available">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="available-badge" [class.available]="row.isAvailable" [class.unavailable]="!row.isAvailable">
+                <mat-icon>{{ row.isAvailable ? 'check_circle' : 'cancel' }}</mat-icon>
+                {{ row.isAvailable ? 'In Stock' : 'Out of Stock' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button color="warn" (click)="deleteVariant(row)" matTooltip="Delete variant">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="variantColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: variantColumns;" [class.row-dirty]="row.dirty"></tr>
+        </table>
+      </div>
     } @else {
-      <p>No variants found. Generate some above.</p>
+      <div class="empty-state">
+        <mat-icon>tune</mat-icon>
+        <p>No variants yet. Use the form above to generate variant combinations.</p>
+      </div>
     }
   } @else {
-    <p>Select a product to manage its variants.</p>
+    <div class="empty-state">
+      <mat-icon>diamond</mat-icon>
+      <p>Select a product to manage its variants and pricing.</p>
+    </div>
   }
 </div>

@@ -54,6 +54,15 @@ public sealed class VariantsController(ISender mediator) : ControllerBase
         return NoContent();
     }
 
+    [HttpPut("bulk")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> BulkUpdate([FromBody] BulkUpdateVariantsCommand command, CancellationToken ct)
+    {
+        await mediator.Send(command, ct);
+        return NoContent();
+    }
+
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -60,7 +60,7 @@ export class ProfileComponent implements OnInit {
         phoneNumber: user.phoneNumber ?? '',
       });
     }
-    this.orderService.getMyOrders().subscribe({
+    this.orderService.getMyOrders(1, 5).subscribe({
       next: (r) => { this.orders.set(r.items); this.ordersLoading.set(false); },
       error: () => this.ordersLoading.set(false),
     });

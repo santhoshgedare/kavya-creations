@@ -35,6 +35,15 @@ public sealed class OrdersController(ISender mediator) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("stats")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType<AdminStatsDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStats(CancellationToken ct)
+    {
+        var result = await mediator.Send(new GetAdminStatsQuery(), ct);
+        return Ok(result);
+    }
+
     [HttpGet("{id:guid}")]
     [ProducesResponseType<OrderDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)

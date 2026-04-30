@@ -69,6 +69,10 @@ export class VariantService {
     return this.http.put<void>(`${this.baseUrl}/variants/${variantId}`, data);
   }
 
+  bulkUpdateVariants(variants: { id: string; price: number; stockQuantity: number }[]): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/variants/bulk`, { variants });
+  }
+
   deleteVariant(variantId: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/variants/${variantId}`);
   }

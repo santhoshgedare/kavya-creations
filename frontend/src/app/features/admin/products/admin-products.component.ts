@@ -23,6 +23,7 @@ import {
   CategoryAttribute, ProductVariant,
 } from '../../../core/models/product.model';
 import { ImageUploadComponent } from '../../../shared/components/image-upload/image-upload.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 // ── Variant row used in wizard step 3 ─────────────────────────────────────────
 interface VariantRow {
@@ -632,11 +633,21 @@ export class AdminProductsComponent implements OnInit {
   }
 
   deleteProduct(product: ProductListItem): void {
-    if (!confirm(`Delete "${product.name}"?`)) return;
-    this.productService.deleteProduct(product.id).subscribe({
-      next: () => { this.snackBar.open('Deleted', 'Close', { duration: 2000 }); this.loadProducts(); },
-      error: () => this.snackBar.open('Failed to delete', 'Close', { duration: 3000 }),
-    });
+    const data: ConfirmDialogData = {
+      title: 'Delete Product',
+      message: `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
+      confirmLabel: 'Delete',
+      confirmColor: 'warn',
+      icon: 'delete_forever',
+    };
+    this.dialog.open(ConfirmDialogComponent, { data, width: '400px' })
+      .afterClosed().subscribe(confirmed => {
+        if (!confirmed) return;
+        this.productService.deleteProduct(product.id).subscribe({
+          next: () => { this.snackBar.open('Product deleted', 'Close', { duration: 2000 }); this.loadProducts(); },
+          error: () => this.snackBar.open('Failed to delete', 'Close', { duration: 3000 }),
+        });
+      });
   }
 
   onPageChange(event: PageEvent): void { this.page.set(event.pageIndex + 1); this.loadProducts(); }
