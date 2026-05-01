@@ -1,0 +1,327 @@
+<div class="editor-page">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/admin" class="breadcrumb-link">Admin</a>
+    <mat-icon class="breadcrumb-sep">chevron_right</mat-icon>
+    <a routerLink="/admin/products" class="breadcrumb-link">Products</a>
+    <mat-icon class="breadcrumb-sep">chevron_right</mat-icon>
+    <span class="breadcrumb-current">{{ isEdit() ? 'Edit Product' : 'New Product' }}</span>
+  </nav>
+
+  <h1 class="page-title">{{ isEdit() ? 'Edit Product' : 'Create Product' }}</h1>
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner diameter="48"></mat-spinner></div>
+  } @else {
+    <mat-stepper linear #stepper orientation="horizontal" class="product-stepper">
+
+      <!-- ── STEP 1: Basic Info ─────────────────────────────────────────── -->
+      <mat-step [stepControl]="basicForm" label="Basic Info">
+        <div class="step-content">
+          <!-- Product Info -->
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>inventory_2</mat-icon>
+              <mat-card-title>Product Information</mat-card-title>
+              <mat-card-subtitle>Core details about this product</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content [formGroup]="basicForm" class="card-content">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="flex2">
+                  <mat-label>Product Name</mat-label>
+                  <input matInput formControlName="name" placeholder="e.g. Gold Necklace">
+                  @if (basicForm.get('name')?.touched && basicForm.get('name')?.errors?.['required']) {
+                    <mat-error>Name is required</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="flex1">
+                  <mat-label>Slug</mat-label>
+                  <input matInput formControlName="slug" placeholder="e.g. gold-necklace">
+                  <mat-hint>URL-friendly identifier</mat-hint>
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Short Description</mat-label>
+                <textarea matInput formControlName="shortDescription" rows="2"
+                          placeholder="Brief description shown in listings"></textarea>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Full Description</mat-label>
+                <textarea matInput formControlName="description" rows="4"
+                          placeholder="Detailed product description"></textarea>
+              </mat-form-field>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Category & Status -->
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>category</mat-icon>
+              <mat-card-title>Category &amp; Status</mat-card-title>
+            </mat-card-header>
+            <mat-card-content [formGroup]="basicForm" class="card-content">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="flex1">
+                  <mat-label>Category</mat-label>
+                  <mat-select formControlName="categoryId">
+                    @for (cat of categories(); track cat.id) {
+                      <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                    }
+                  </mat-select>
+                  @if (basicForm.get('categoryId')?.touched && basicForm.get('categoryId')?.errors?.['required']) {
+                    <mat-error>Category is required</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="flex1">
+                  <mat-label>Status</mat-label>
+                  <mat-select formControlName="status">
+                    <mat-option [value]="1">Active</mat-option>
+                    <mat-option [value]="2">Inactive</mat-option>
+                    <mat-option [value]="3">Out of Stock</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <mat-checkbox formControlName="isFeatured" class="featured-check">
+                Mark as Featured
+              </mat-checkbox>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Pricing & Stock -->
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>sell</mat-icon>
+              <mat-card-title>Pricing &amp; Stock</mat-card-title>
+              <mat-card-subtitle>Base price used as default for variants</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content [formGroup]="basicForm" class="card-content">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="flex1">
+                  <mat-label>Base Price (Rs.)</mat-label>
+                  <input matInput type="number" formControlName="price">
+                  @if (basicForm.get('price')?.touched && basicForm.get('price')?.errors?.['required']) {
+                    <mat-error>Price is required</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="flex1">
+                  <mat-label>Discount Price (Rs.)</mat-label>
+                  <input matInput type="number" formControlName="discountPrice">
+                  <mat-hint>Leave empty if no discount</mat-hint>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="flex1">
+                  <mat-label>Stock Quantity</mat-label>
+                  <input matInput type="number" formControlName="stockQuantity">
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Physical Details -->
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>straighten</mat-icon>
+              <mat-card-title>Physical Details</mat-card-title>
+              <mat-card-subtitle>Optional material and weight information</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content [formGroup]="basicForm" class="card-content">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="flex1">
+                  <mat-label>Material</mat-label>
+                  <input matInput formControlName="material" placeholder="e.g. 22K Gold">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="flex1">
+                  <mat-label>Weight</mat-label>
+                  <input matInput formControlName="weight" placeholder="e.g. 5g">
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <div class="step-actions">
+            <button mat-flat-button color="primary" matStepperNext (click)="onStep1Next()">
+              Next: Attributes <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- ── STEP 2: Attributes ─────────────────────────────────────────── -->
+      <mat-step label="Attributes">
+        <div class="step-content">
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>tune</mat-icon>
+              <mat-card-title>Attribute Values</mat-card-title>
+              <mat-card-subtitle>Select values that apply — variants are auto-generated from combinations</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="card-content">
+              @if (loadingAttrs()) {
+                <div class="loading-center"><mat-spinner diameter="36"></mat-spinner></div>
+              } @else if (categoryAttributes().length === 0) {
+                <div class="empty-state">
+                  <mat-icon>tune</mat-icon>
+                  <p>No attributes defined for this category. You can skip to the next step.</p>
+                </div>
+              } @else {
+                @for (attr of categoryAttributes(); track attr.attributeId) {
+                  <div class="attr-select-block">
+                    <label class="attr-label">
+                      {{ attr.attributeDisplayName }}
+                      @if (attr.isRequired) { <span class="required-mark">*</span> }
+                    </label>
+                    <div class="value-chips">
+                      @for (val of attr.values; track val.id) {
+                        <button mat-stroked-button
+                                class="value-chip-btn"
+                                [class.selected]="isValueSelected(val.id)"
+                                (click)="toggleValue(attr.attributeId, val)">
+                          {{ val.displayValue }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+
+                @if (generatedVariants().length > 0) {
+                  <div class="variant-preview">
+                    <h4 class="preview-title">
+                      <mat-icon>preview</mat-icon>
+                      {{ generatedVariants().length }} variant{{ generatedVariants().length === 1 ? '' : 's' }} will be generated
+                    </h4>
+                    <div class="variant-chip-list">
+                      @for (v of generatedVariants(); track $index) {
+                        <mat-chip>{{ v.displayLabel }}</mat-chip>
+                      }
+                    </div>
+                  </div>
+                }
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <div class="step-actions">
+            <button mat-stroked-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon> Back
+            </button>
+            <button mat-flat-button color="primary" matStepperNext (click)="onStep2Next()">
+              Next: Pricing <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- ── STEP 3: Variant Pricing ────────────────────────────────────── -->
+      <mat-step label="Pricing">
+        <div class="step-content">
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>price_change</mat-icon>
+              <mat-card-title>Variant Pricing &amp; Stock</mat-card-title>
+              <mat-card-subtitle>Set price and stock for each variant combination</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="card-content">
+              @if (generatedVariants().length === 0) {
+                <div class="empty-state">
+                  <mat-icon>price_change</mat-icon>
+                  <p>No variants generated. The base price from Step 1 will be used.</p>
+                </div>
+              } @else {
+                <div class="pricing-table-wrap">
+                  <table class="variant-pricing-table">
+                    <thead>
+                      <tr>
+                        <th>Variant</th>
+                        <th>SKU</th>
+                        <th>Price (Rs.)</th>
+                        <th>Stock</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (variant of generatedVariants(); track $index; let i = $index) {
+                        <tr>
+                          <td>
+                            <div class="variant-label-chips">
+                              @for (part of variant.displayLabel.split(' / '); track part) {
+                                <mat-chip class="variant-chip">{{ part }}</mat-chip>
+                              }
+                            </div>
+                          </td>
+                          <td>
+                            <input class="inline-input" type="text" [value]="variant.sku"
+                                   (change)="updateVariantSku(i, $any($event.target).value)">
+                          </td>
+                          <td>
+                            <input class="inline-input price-input" type="number" [value]="variant.price"
+                                   (change)="updateVariantPrice(i, +$any($event.target).value)">
+                          </td>
+                          <td>
+                            <input class="inline-input stock-input" type="number" [value]="variant.stock"
+                                   (change)="updateVariantStock(i, +$any($event.target).value)">
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <div class="step-actions">
+            <button mat-stroked-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon> Back
+            </button>
+            <button mat-flat-button color="primary" matStepperNext>
+              Next: Images <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <!-- ── STEP 4: Images ─────────────────────────────────────────────── -->
+      <mat-step label="Images">
+        <div class="step-content">
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>photo_library</mat-icon>
+              <mat-card-title>Product Images</mat-card-title>
+              <mat-card-subtitle>Upload up to 8 images — first image is the primary image</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="card-content">
+              <app-image-upload
+                #imageUpload
+                [maxFiles]="8"
+                [existingUrls]="existingImageUrls"
+                (urlsChange)="onUrlsChange($event)">
+              </app-image-upload>
+            </mat-card-content>
+          </mat-card>
+
+          <div class="step-actions">
+            <button mat-stroked-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon> Back
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+    </mat-stepper>
+  }
+
+  <!-- Sticky Action Bar -->
+  <div class="action-bar">
+    <div class="action-bar-inner">
+      <button mat-stroked-button (click)="cancel()" [disabled]="saving()">
+        <mat-icon>close</mat-icon> Cancel
+      </button>
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="basicForm.invalid || saving()">
+        @if (saving()) {
+          <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+        {{ isEdit() ? 'Save Changes' : 'Create Product' }}
+      </button>
+    </div>
+  </div>
+</div>
