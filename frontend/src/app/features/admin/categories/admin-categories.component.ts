@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -16,13 +16,17 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductService } from '../../../core/services/product.service';
 import { VariantService } from '../../../core/services/variant.service';
 import { Category, CategoryAttribute, ProductAttribute } from '../../../core/models/product.model';
+import { ImageUploadComponent } from '../../../shared/components/image-upload/image-upload.component';
 
 // ── Category Dialog ───────────────────────────────────────────────────────────
 
 @Component({
   selector: 'app-category-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatButtonModule],
+  imports: [
+    ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule,
+    MatCheckboxModule, MatButtonModule, MatProgressSpinnerModule, ImageUploadComponent,
+  ],
   template: `
     <h2 mat-dialog-title>{{ data.category ? 'Edit Category' : 'New Category' }}</h2>
     <mat-dialog-content [formGroup]="form" class="cat-dialog-content">
@@ -48,41 +52,73 @@ import { Category, CategoryAttribute, ProductAttribute } from '../../../core/mod
         <mat-label>Description</mat-label>
         <textarea matInput formControlName="description" rows="3" placeholder="Short category description"></textarea>
       </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Image URL</mat-label>
-        <input matInput formControlName="imageUrl" placeholder="https://...">
-      </mat-form-field>
+      <div class="image-upload-section">
+        <label class="image-upload-label">Category Image</label>
+        <app-image-upload
+          #catImageUpload
+          [maxFiles]="1"
+          [existingUrls]="existingImageUrls">
+        </app-image-upload>
+      </div>
       <mat-form-field appearance="outline" style="width:160px">
         <mat-label>Display Order</mat-label>
         <input matInput type="number" formControlName="displayOrder">
       </mat-form-field>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid">Save</button>
+      <button mat-button mat-dialog-close [disabled]="saving()">Cancel</button>
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || saving()">
+        @if (saving()) { <mat-spinner diameter="18" style="display:inline-block;margin-right:6px"></mat-spinner> }
+        Save
+      </button>
     </mat-dialog-actions>
   `,
   styles: [
-    `.cat-dialog-content { min-width: 460px; display: flex; flex-direction: column; gap: 8px; padding: 16px 0; }
-     .full-width { width: 100%; }`
+    `.cat-dialog-content { min-width: 480px; display: flex; flex-direction: column; gap: 8px; padding: 16px 0; }
+     .full-width { width: 100%; }
+     .image-upload-section { margin: 4px 0 8px; }
+     .image-upload-label { display: block; font-size: 0.875rem; font-weight: 500; color: rgba(0,0,0,.6); margin-bottom: 8px; }`
   ]
 })
 export class CategoryDialogComponent {
   readonly data = inject<{ category: Category | null }>(MAT_DIALOG_DATA);
   readonly dialogRef = inject(MatDialogRef<CategoryDialogComponent>);
   private readonly fb = inject(FormBuilder);
+  private readonly productService = inject(ProductService);
+  private readonly snackBar = inject(MatSnackBar);
+
+  saving = signal(false);
+  existingImageUrls: string[] = this.data.category?.imageUrl ? [this.data.category.imageUrl] : [];
+
+  @ViewChild('catImageUpload') catImageUploadRef!: ImageUploadComponent;
 
   form = this.fb.group({
     name: [this.data.category?.name ?? '', Validators.required],
     slug: [this.data.category?.slug ?? '', [Validators.required, Validators.pattern(/^[a-z0-9-]+$/)]],
     description: [this.data.category?.description ?? ''],
-    imageUrl: [this.data.category?.imageUrl ?? ''],
     displayOrder: [this.data.category?.displayOrder ?? 0],
   });
 
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    this.dialogRef.close(this.form.value);
+    const pendingFiles = this.catImageUploadRef?.getPendingFiles() ?? [];
+    if (pendingFiles.length > 0) {
+      this.saving.set(true);
+      this.productService.uploadImages(pendingFiles).subscribe({
+        next: (urls) => {
+          this.saving.set(false);
+          this.dialogRef.close({ ...this.form.value, imageUrl: urls[0] ?? '' });
+        },
+        error: () => {
+          this.saving.set(false);
+          this.snackBar.open('Image upload failed. Please try again.', 'Close', { duration: 4000 });
+        },
+      });
+    } else {
+      // No new file: preserve existing URL (or empty if removed)
+      const existingUrl = this.catImageUploadRef?.existingImages[0] ?? '';
+      this.dialogRef.close({ ...this.form.value, imageUrl: existingUrl });
+    }
   }
 }
 

@@ -10,11 +10,12 @@ import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ProductListItem, Category } from '../../core/models/product.model';
+import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, MatButtonModule, MatCardModule, MatProgressSpinnerModule, MatIconModule],
+  imports: [RouterLink, CurrencyPipe, MatButtonModule, MatCardModule, MatProgressSpinnerModule, MatIconModule, ImageUrlPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.scss',
 })

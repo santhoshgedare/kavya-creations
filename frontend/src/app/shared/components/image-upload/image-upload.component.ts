@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ImageUrlPipe } from '../../pipes/image-url.pipe';
 
 export interface UploadedFile {
   file: File;
@@ -22,7 +23,7 @@ const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 @Component({
   selector: 'app-image-upload',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressBarModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressBarModule, ImageUrlPipe],
   templateUrl: './image-upload.component.html',
   styleUrl: './image-upload.component.scss',
 })

@@ -16,11 +16,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { VariantService } from '../../../core/services/variant.service';
 import { Product, ProductListItem, ProductStatus, CategoryAttribute, ProductVariant } from '../../../core/models/product.model';
 import { LightboxComponent, LightboxData } from '../../../shared/components/lightbox/lightbox.component';
+import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, MatButtonModule, MatIconModule, MatCardModule, MatChipsModule, MatProgressSpinnerModule, MatSelectModule, MatFormFieldModule],
+  imports: [RouterLink, CurrencyPipe, MatButtonModule, MatIconModule, MatCardModule, MatChipsModule, MatProgressSpinnerModule, MatSelectModule, MatFormFieldModule, ImageUrlPipe],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
 })

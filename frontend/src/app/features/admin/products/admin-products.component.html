@@ -14,7 +14,7 @@
         <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
         <mat-cell *matCellDef="let p">
           <div class="product-cell">
-            <img [src]="p.primaryImageUrl || 'assets/placeholder.jpg'" [alt]="p.name" class="table-img">
+            <img [src]="p.primaryImageUrl | imageUrl" [alt]="p.name" class="table-img">
             <span>{{ p.name }}</span>
           </div>
         </mat-cell>

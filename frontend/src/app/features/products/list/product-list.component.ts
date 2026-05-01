@@ -16,6 +16,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ProductListItem, Category } from '../../../core/models/product.model';
+import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe';
 
 @Component({
   selector: 'app-product-list',
@@ -25,6 +26,7 @@ import { ProductListItem, Category } from '../../../core/models/product.model';
     MatCardModule, MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,
     MatPaginatorModule, MatProgressSpinnerModule,
+    ImageUrlPipe,
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',
