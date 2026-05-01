@@ -11,11 +11,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductService } from '../../../../core/services/product.service';
 import { VariantService } from '../../../../core/services/variant.service';
 import { Category, CategoryAttribute, ProductAttribute } from '../../../../core/models/product.model';
 import { ImageUploadComponent } from '../../../../shared/components/image-upload/image-upload.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-category-editor',
@@ -24,7 +26,7 @@ import { ImageUploadComponent } from '../../../../shared/components/image-upload
     RouterLink, ReactiveFormsModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule,
     MatIconModule, MatProgressSpinnerModule, MatSelectModule,
-    MatCheckboxModule, MatChipsModule, MatDividerModule,
+    MatCheckboxModule, MatChipsModule, MatDividerModule, MatDialogModule,
     ImageUploadComponent,
   ],
   templateUrl: './category-editor.component.html',
@@ -35,6 +37,7 @@ export class CategoryEditorComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly productService = inject(ProductService);
   private readonly variantService = inject(VariantService);
+  private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
 
@@ -173,14 +176,24 @@ export class CategoryEditorComponent implements OnInit {
   }
 
   removeMapping(mappingId: string): void {
-    if (!confirm('Remove this attribute from category?')) return;
-    this.variantService.removeAttributeFromCategory(mappingId).subscribe({
-      next: () => {
-        this.snackBar.open('Removed', 'Close', { duration: 2000 });
-        this.loadCategoryAttributes(this.categoryId()!);
-      },
-      error: () => this.snackBar.open('Failed to remove', 'Close', { duration: 3000 }),
-    });
+    const data: ConfirmDialogData = {
+      title: 'Remove Attribute',
+      message: 'Remove this attribute from the category?',
+      confirmLabel: 'Remove',
+      confirmColor: 'warn',
+      icon: 'link_off',
+    };
+    this.dialog.open(ConfirmDialogComponent, { data, width: '360px' })
+      .afterClosed().subscribe(confirmed => {
+        if (!confirmed) return;
+        this.variantService.removeAttributeFromCategory(mappingId).subscribe({
+          next: () => {
+            this.snackBar.open('Removed', 'Close', { duration: 2000 });
+            this.loadCategoryAttributes(this.categoryId()!);
+          },
+          error: () => this.snackBar.open('Failed to remove', 'Close', { duration: 3000 }),
+        });
+      });
   }
 
   unmappedAttributes(): ProductAttribute[] {

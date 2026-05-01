@@ -13,6 +13,7 @@ export interface AuthResponse {
   refreshToken: string;
   accessTokenExpiry: string;
   user: User;
+  requiresPhoneCompletion: boolean;
 }
 
 export interface LoginRequest {

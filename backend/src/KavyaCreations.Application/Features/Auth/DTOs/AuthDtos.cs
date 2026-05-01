@@ -4,7 +4,8 @@ public record AuthResponseDto(
     string AccessToken,
     string RefreshToken,
     DateTime AccessTokenExpiry,
-    UserProfileDto User
+    UserProfileDto User,
+    bool RequiresPhoneCompletion = false
 );
 
 public record UserProfileDto(
@@ -56,3 +57,5 @@ public record UpdateProfileRequest(
     string? ProfileImageUrl,
     string? PhoneNumber
 );
+
+public record GoogleSignInRequest(string IdToken);

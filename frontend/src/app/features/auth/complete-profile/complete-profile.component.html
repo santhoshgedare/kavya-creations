@@ -1,0 +1,40 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <span class="auth-brand__icon">✦</span>
+      <span class="auth-brand__name">Kavya Creations</span>
+    </div>
+
+    <div class="auth-header">
+      <h1>One Last Step</h1>
+      <p>
+        Please add your phone number to complete your account.
+        This is required to process orders and send delivery updates.
+      </p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="auth-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phone Number</mat-label>
+        <input matInput type="tel" formControlName="phoneNumber"
+               placeholder="+91 98765 43210" autocomplete="tel">
+        <mat-icon matSuffix>phone</mat-icon>
+        @if (form.get('phoneNumber')?.touched && form.get('phoneNumber')?.errors?.['required']) {
+          <mat-error>Phone number is required</mat-error>
+        }
+        @if (form.get('phoneNumber')?.touched && form.get('phoneNumber')?.errors?.['pattern']) {
+          <mat-error>Enter a valid phone number</mat-error>
+        }
+      </mat-form-field>
+
+      <button mat-raised-button type="submit" class="submit-btn" [disabled]="saving()">
+        @if (saving()) {
+          <mat-spinner diameter="22"></mat-spinner>
+          Saving...
+        } @else {
+          Complete Profile
+        }
+      </button>
+    </form>
+  </div>
+</div>

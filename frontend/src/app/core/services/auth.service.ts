@@ -13,9 +13,13 @@ export class AuthService {
 
   private readonly _currentUser = signal<User | null>(this.loadUserFromStorage());
   private readonly _accessToken = signal<string | null>(localStorage.getItem('access_token'));
+  private readonly _requiresPhoneCompletion = signal<boolean>(
+    localStorage.getItem('requires_phone_completion') === 'true'
+  );
 
   readonly currentUser = this._currentUser.asReadonly();
   readonly accessToken = this._accessToken.asReadonly();
+  readonly requiresPhoneCompletion = this._requiresPhoneCompletion.asReadonly();
   readonly isAuthenticated = computed(() => !!this._currentUser());
   readonly isAdmin = computed(() => this._currentUser()?.roles?.includes('Admin') ?? false);
 
@@ -27,6 +31,12 @@ export class AuthService {
 
   register(request: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/register`, request).pipe(
+      tap(response => this.handleAuthResponse(response))
+    );
+  }
+
+  googleSignIn(idToken: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/google-signin`, { idToken }).pipe(
       tap(response => this.handleAuthResponse(response))
     );
   }
@@ -71,6 +81,11 @@ export class AuthService {
       tap(user => {
         this._currentUser.set(user);
         localStorage.setItem('current_user', JSON.stringify(user));
+        // Clear phone completion flag once profile is updated with a phone number
+        if (phoneNumber) {
+          this._requiresPhoneCompletion.set(false);
+          localStorage.removeItem('requires_phone_completion');
+        }
       })
     );
   }
@@ -81,14 +96,23 @@ export class AuthService {
     localStorage.setItem('access_token', response.accessToken);
     localStorage.setItem('refresh_token', response.refreshToken);
     localStorage.setItem('current_user', JSON.stringify(response.user));
+    if (response.requiresPhoneCompletion) {
+      this._requiresPhoneCompletion.set(true);
+      localStorage.setItem('requires_phone_completion', 'true');
+    } else {
+      this._requiresPhoneCompletion.set(false);
+      localStorage.removeItem('requires_phone_completion');
+    }
   }
 
   private clearAuthData(): void {
     this._currentUser.set(null);
     this._accessToken.set(null);
+    this._requiresPhoneCompletion.set(false);
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('current_user');
+    localStorage.removeItem('requires_phone_completion');
   }
 
   private loadUserFromStorage(): User | null {
