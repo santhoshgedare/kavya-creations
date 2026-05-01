@@ -4,9 +4,9 @@
   min-height: 92vh;
   background:
     linear-gradient(160deg,
-      rgba(86, 29, 55, 0.92) 0%,
-      rgba(44, 24, 16, 0.82) 50%,
-      rgba(123, 45, 78, 0.75) 100%);
+      rgba(61, 26, 106, 0.94) 0%,
+      rgba(26, 26, 46, 0.85) 50%,
+      rgba(92, 45, 143, 0.78) 100%);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -14,7 +14,7 @@
   &__overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 70% 50%, rgba(201, 149, 108, 0.12) 0%, transparent 60%);
+    background: radial-gradient(ellipse at 70% 50%, rgba(200, 131, 106, 0.14) 0%, transparent 60%);
     pointer-events: none;
   }
 
@@ -230,7 +230,7 @@
   &__overlay {
     position: absolute;
     inset: 0;
-    background: rgba(44, 24, 16, 0.45);
+    background: rgba(26, 26, 46, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -387,10 +387,11 @@
   &:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--kc-accent);
 
     .category-card__image { transform: scale(1.08); }
     .category-card__overlay {
-      background: rgba(86, 29, 55, 0.55);
+      background: rgba(61, 26, 106, 0.58);
     }
   }
 
@@ -409,7 +410,7 @@
   &__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(44, 24, 16, 0.8) 0%, rgba(44, 24, 16, 0.2) 60%, transparent 100%);
+    background: linear-gradient(to top, rgba(26, 26, 46, 0.82) 0%, rgba(26, 26, 46, 0.22) 60%, transparent 100%);
     transition: background var(--transition-base);
   }
 
