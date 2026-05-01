@@ -6,7 +6,7 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$rose-palette,
+        primary: mat.$violet-palette,
         tertiary: mat.$orange-palette,
       ),
       typography: Inter,
@@ -17,26 +17,26 @@ html {
 
 // ─── Brand CSS Custom Properties ───────────────────────────────────────────
 :root {
-  // Brand colors
-  --kc-primary:        #7B2D4E;   // deep rose/burgundy
-  --kc-primary-light:  #A0435F;
-  --kc-primary-dark:   #561D37;
-  --kc-accent:         #C9956C;   // rose gold
-  --kc-accent-dark:    #A87050;
+  // Brand colors — deep amethyst purple + warm rose-gold accent
+  --kc-primary:        #5C2D8F;   // deep amethyst violet
+  --kc-primary-light:  #7B45B8;
+  --kc-primary-dark:   #3D1A6A;
+  --kc-accent:         #C8836A;   // warm rose gold / terracotta
+  --kc-accent-dark:    #A8604A;
   --kc-gold:           #D4AF37;
   --kc-gold-light:     #EDD87A;
 
-  // Neutral / surface
-  --kc-surface:        #FAF7F2;   // warm cream
-  --kc-surface-alt:    #F3EDE5;
-  --kc-border:         #E8D5C4;
-  --kc-divider:        #EDE4DB;
+  // Neutral / surface — crisp modern whites
+  --kc-surface:        #F8F9FB;   // crisp light neutral
+  --kc-surface-alt:    #F2F4F8;
+  --kc-border:         #DDE2EF;
+  --kc-divider:        #E8EBF4;
 
-  // Text
-  --kc-text-primary:   #2C1810;
-  --kc-text-secondary: #6E5A5A;
-  --kc-text-muted:     #9E8A87;
-  --kc-text-on-dark:   #FAF7F2;
+  // Text — deep navy for premium readability
+  --kc-text-primary:   #1A1A2E;
+  --kc-text-secondary: #4A5170;
+  --kc-text-muted:     #8A92AF;
+  --kc-text-on-dark:   #F8F9FB;
 
   // Spacing scale (8px base)
   --sp-1:  4px;
@@ -50,16 +50,16 @@ html {
   --sp-9:  80px;
   --sp-10: 96px;
 
-  // Shadows
-  --shadow-xs:  0 1px 3px rgba(44, 24, 16, 0.08);
-  --shadow-sm:  0 2px 8px rgba(44, 24, 16, 0.10);
-  --shadow-md:  0 4px 16px rgba(44, 24, 16, 0.12);
-  --shadow-lg:  0 8px 32px rgba(44, 24, 16, 0.15);
+  // Shadows — cool-toned with purple tint for elevation
+  --shadow-xs:  0 1px 3px rgba(26, 26, 46, 0.07);
+  --shadow-sm:  0 2px 8px rgba(26, 26, 46, 0.09);
+  --shadow-md:  0 4px 16px rgba(92, 45, 143, 0.12);
+  --shadow-lg:  0 8px 32px rgba(92, 45, 143, 0.16);
 
   // Radius
   --radius-sm:  4px;
   --radius-md:  8px;
-  --radius-lg:  12px;
+  --radius-lg:  14px;
   --radius-xl:  20px;
   --radius-full: 9999px;
 
@@ -73,13 +73,13 @@ html {
 
 // ─── Dark theme overrides ──────────────────────────────────────────────────
 [data-theme='dark'] {
-  --kc-surface:        #1A0E12;
-  --kc-surface-alt:    #241419;
-  --kc-border:         #3D2030;
-  --kc-divider:        #2E1820;
-  --kc-text-primary:   #F5EDE8;
-  --kc-text-secondary: #C4A8A0;
-  --kc-text-muted:     #8B6E6B;
+  --kc-surface:        #0F0A1E;
+  --kc-surface-alt:    #170F2A;
+  --kc-border:         #2D1F4A;
+  --kc-divider:        #231840;
+  --kc-text-primary:   #F0EEFB;
+  --kc-text-secondary: #A89DC5;
+  --kc-text-muted:     #6B5E8A;
   color-scheme: dark;
 }
 
@@ -101,6 +101,12 @@ body {
   color-scheme: dark;
   background-color: var(--kc-surface);
   color: var(--kc-text-primary);
+}
+
+// ─── Focus ring ────────────────────────────────────────────────────────────
+:focus-visible {
+  outline: 2px solid var(--kc-primary);
+  outline-offset: 3px;
 }
 
 // ─── Typography ────────────────────────────────────────────────────────────
@@ -244,6 +250,8 @@ a:hover { color: var(--kc-primary-light); }
 }
 
 // ─── Angular Material Overrides ─────────────────────────────────────────────
+
+// Cards
 .mat-mdc-card {
   background-color: #ffffff !important;
   border: 1px solid var(--kc-divider) !important;
@@ -252,18 +260,225 @@ a:hover { color: var(--kc-primary-light); }
 }
 
 [data-theme='dark'] .mat-mdc-card {
-  background-color: #2A1820 !important;
+  background-color: var(--kc-surface-alt) !important;
   border-color: var(--kc-border) !important;
 }
 
-.mat-mdc-raised-button.mat-primary {
+// Primary buttons — flat / raised
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-flat-button.mat-primary {
   background-color: var(--kc-primary) !important;
+  border-radius: var(--radius-full) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  transition: background-color var(--transition-base),
+              transform 0.15s ease,
+              box-shadow var(--transition-base) !important;
+
+  &:hover:not([disabled]) {
+    background-color: var(--kc-primary-light) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 14px rgba(92, 45, 143, 0.35) !important;
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0) !important;
+    box-shadow: var(--shadow-sm) !important;
+  }
 }
 
+// Outlined buttons
+.mat-mdc-outlined-button.mat-primary {
+  border-color: var(--kc-primary) !important;
+  color: var(--kc-primary) !important;
+  border-radius: var(--radius-full) !important;
+  font-weight: 500 !important;
+
+  &:hover:not([disabled]) {
+    background: rgba(92, 45, 143, 0.06) !important;
+  }
+}
+
+// Icon buttons
+.mat-mdc-icon-button.mat-primary {
+  color: var(--kc-primary) !important;
+}
+
+// Form fields — larger, cleaner outline style
 .mat-mdc-form-field {
   .mat-mdc-text-field-wrapper {
     border-radius: var(--radius-md) !important;
+    background-color: #fff !important;
   }
+
+  .mat-mdc-form-field-infix {
+    min-height: 52px !important;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+  }
+
+  // Outline borders
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--kc-border) !important;
+    transition: border-color var(--transition-base) !important;
+  }
+
+  // Hover state
+  &:hover:not(.mat-focused) {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--kc-text-muted) !important;
+    }
+  }
+
+  // Focused state
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--kc-primary) !important;
+      border-width: 2px !important;
+    }
+  }
+
+  // Label color
+  .mat-mdc-floating-label { color: var(--kc-text-muted) !important; }
+  &.mat-focused .mat-mdc-floating-label { color: var(--kc-primary) !important; }
+}
+
+[data-theme='dark'] .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background-color: var(--kc-surface-alt) !important;
+}
+
+// Select panel
+.mat-mdc-select-panel {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+// Dialogs — premium rounded feel
+.mat-mdc-dialog-container {
+  border-radius: var(--radius-xl) !important;
+
+  .mat-mdc-dialog-surface {
+    border-radius: var(--radius-xl) !important;
+  }
+}
+
+// Tables — clean minimal
+.mat-mdc-table {
+  background: transparent !important;
+}
+
+.mat-mdc-header-row {
+  background: var(--kc-surface-alt) !important;
+}
+
+.mat-mdc-header-cell {
+  color: var(--kc-text-secondary) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.07em !important;
+  text-transform: uppercase !important;
+  border-bottom-color: var(--kc-border) !important;
+}
+
+.mat-mdc-row {
+  transition: background var(--transition-base) !important;
+  border-bottom-color: var(--kc-divider) !important;
+
+  &:hover {
+    background: var(--kc-surface-alt) !important;
+  }
+}
+
+.mat-mdc-cell {
+  color: var(--kc-text-primary) !important;
+  font-size: 0.9rem !important;
+  border-bottom-color: var(--kc-divider) !important;
+}
+
+// Chips
+.mat-mdc-chip.mat-mdc-standard-chip {
+  border-radius: var(--radius-full) !important;
+}
+
+// Paginator
+.mat-mdc-paginator {
+  background: transparent !important;
+  color: var(--kc-text-secondary) !important;
+}
+
+// Menu
+.mat-mdc-menu-panel {
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--kc-divider) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.mat-mdc-menu-item {
+  transition: background var(--transition-base) !important;
+  font-size: 0.9rem !important;
+
+  &:hover {
+    background: var(--kc-surface-alt) !important;
+  }
+}
+
+// Stepper
+.mat-step-header {
+  .mat-step-icon-selected,
+  .mat-step-icon-state-edit,
+  .mat-step-icon-state-done {
+    background-color: var(--kc-primary) !important;
+  }
+
+  .mat-step-icon {
+    background-color: var(--kc-border) !important;
+  }
+
+  &.cdk-keyboard-focused,
+  &.cdk-program-focused,
+  &:hover:not([aria-disabled]) {
+    background-color: var(--kc-surface-alt) !important;
+  }
+}
+
+.mat-stepper-horizontal-line,
+.mat-stepper-vertical-line::before {
+  border-top-color: var(--kc-border) !important;
+}
+
+// Snackbar
+.mat-mdc-snack-bar-container {
+  border-radius: var(--radius-lg) !important;
+}
+
+// Tooltip
+.mdc-tooltip__surface {
+  background: var(--kc-text-primary) !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: 0.78rem !important;
+}
+
+// Slide-toggle / Checkbox accent
+.mat-mdc-slide-toggle.mat-primary,
+.mat-mdc-checkbox.mat-primary {
+  --mdc-switch-selected-track-color: var(--kc-primary);
+  --mdc-switch-selected-handle-color: var(--kc-primary-light);
+  --mdc-checkbox-selected-checkmark-color: #fff;
+  --mdc-checkbox-selected-focus-icon-color: var(--kc-primary);
+  --mdc-checkbox-selected-hover-icon-color: var(--kc-primary);
+  --mdc-checkbox-selected-icon-color: var(--kc-primary);
+  --mdc-checkbox-selected-pressed-icon-color: var(--kc-primary-dark);
+}
+
+// Progress spinner
+.mat-mdc-progress-spinner circle {
+  stroke: var(--kc-primary) !important;
 }
 
 // ─── Lightbox dialog panel ──────────────────────────────────────────────────
