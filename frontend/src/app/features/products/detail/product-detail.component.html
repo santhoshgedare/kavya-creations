@@ -19,7 +19,7 @@
       <div class="gallery">
         <div class="gallery__main-wrap" (click)="openLightbox()" title="Click to zoom">
           <img class="gallery__main-image"
-               [src]="selectedImage() || 'assets/placeholder.jpg'"
+               [src]="selectedImage() | imageUrl"
                [alt]="p.name"
                (error)="onImageError($event)">
           <div class="gallery__zoom-hint">
@@ -31,7 +31,7 @@
             @for (img of p.images; track img.id; let i = $index) {
               <div class="gallery__thumb" [class.gallery__thumb--active]="selectedImageIndex() === i"
                    (click)="selectImage(img.url, i)">
-                <img [src]="img.url" [alt]="img.altText || p.name" loading="lazy"
+                <img [src]="img.url | imageUrl" [alt]="img.altText || p.name" loading="lazy"
                      (error)="onImageError($event)">
               </div>
             }
@@ -169,7 +169,7 @@
             <a class="related-card" [routerLink]="['/products', rp.slug]">
               <div class="related-card__image-wrap">
                 <img class="related-card__image"
-                     [src]="rp.primaryImageUrl || 'assets/placeholder.jpg'"
+                     [src]="rp.primaryImageUrl | imageUrl"
                      [alt]="rp.name" loading="lazy">
               </div>
               <div class="related-card__body">

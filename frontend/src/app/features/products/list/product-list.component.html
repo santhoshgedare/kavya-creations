@@ -90,7 +90,7 @@
             <div class="product-card__image-wrap"
                  [routerLink]="['/products', product.slug]">
               <img class="product-card__image"
-                   [src]="product.primaryImageUrl || 'assets/placeholder.jpg'"
+                   [src]="product.primaryImageUrl | imageUrl"
                    [alt]="product.name" loading="lazy"
                    (error)="onImageError($event)">
               @if (product.discountPrice) {

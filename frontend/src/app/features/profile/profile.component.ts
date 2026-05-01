@@ -16,6 +16,7 @@ import { ProductService } from '../../core/services/product.service';
 import { OrderService } from '../../core/services/order.service';
 import { OrderListItem, OrderStatus } from '../../core/models/order.model';
 import { ImageUploadComponent } from '../../shared/components/image-upload/image-upload.component';
+import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
 
 @Component({
   selector: 'app-profile',
@@ -24,7 +25,7 @@ import { ImageUploadComponent } from '../../shared/components/image-upload/image
     RouterLink, CurrencyPipe, DatePipe, ReactiveFormsModule,
     MatCardModule, MatButtonModule, MatIconModule, MatFormFieldModule,
     MatInputModule, MatProgressSpinnerModule, MatChipsModule, MatProgressBarModule,
-    ImageUploadComponent,
+    ImageUploadComponent, ImageUrlPipe,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',

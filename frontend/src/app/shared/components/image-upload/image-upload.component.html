@@ -18,7 +18,7 @@
       @for (url of existingImages; track url; let i = $index) {
         <div class="preview-card">
           <div class="preview-card__image-wrap">
-            <img [src]="url" [alt]="'Image ' + (i + 1)" class="preview-card__image">
+            <img [src]="url | imageUrl" [alt]="'Image ' + (i + 1)" class="preview-card__image">
             @if (i === 0) {
               <span class="preview-card__primary-badge">Primary</span>
             }

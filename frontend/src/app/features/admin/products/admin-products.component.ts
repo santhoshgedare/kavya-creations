@@ -24,6 +24,7 @@ import {
 } from '../../../core/models/product.model';
 import { ImageUploadComponent } from '../../../shared/components/image-upload/image-upload.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe';
 
 // ── Variant row used in wizard step 3 ─────────────────────────────────────────
 interface VariantRow {
@@ -529,6 +530,7 @@ export class ProductWizardComponent implements OnInit {
   imports: [
     CurrencyPipe, MatTableModule, MatButtonModule, MatIconModule,
     MatDialogModule, MatProgressSpinnerModule, MatPaginatorModule, MatChipsModule,
+    ImageUrlPipe,
   ],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',

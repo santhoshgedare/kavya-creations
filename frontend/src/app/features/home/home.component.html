@@ -71,7 +71,7 @@
           <article class="product-card" [routerLink]="['/products', product.slug]">
             <div class="product-card__image-wrap">
               <img class="product-card__image"
-                   [src]="product.primaryImageUrl || 'assets/placeholder.jpg'"
+                   [src]="product.primaryImageUrl | imageUrl"
                    [alt]="product.name"
                    loading="lazy">
               <div class="product-card__overlay">
@@ -93,8 +93,8 @@
               <h3 class="product-card__name">{{ product.name }}</h3>
               <div class="product-card__price-row">
                 @if (product.discountPrice) {
-                  <span class="price-original">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
-                  <span class="price-discounted">{{ product.discountPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                  <span class="price-original">{{ product.discountPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                  <span class="price-discounted">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
                 } @else {
                   <span class="price">{{ product.effectivePrice | currency:'INR':'symbol':'1.0-0' }}</span>
                 }
@@ -132,7 +132,7 @@
              [queryParams]="{category: cat.slug}">
             <div class="category-card__image-wrap">
               <img class="category-card__image"
-                   [src]="cat.imageUrl || 'assets/placeholder.jpg'"
+                   [src]="cat.imageUrl | imageUrl"
                    [alt]="cat.name"
                    loading="lazy">
               <div class="category-card__overlay"></div>
