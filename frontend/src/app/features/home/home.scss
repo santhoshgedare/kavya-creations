@@ -1,6 +1,7 @@
 // ─── Hero ────────────────────────────────────────────────────────────────────
 .hero {
   position: relative;
+  // 88vh leaves room for the navbar (--navbar-height: 68px) and the trust bar below
   min-height: 88vh;
   background: linear-gradient(
     135deg,

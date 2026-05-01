@@ -10,6 +10,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/services/auth.service';
 
+/** Accepts phone numbers with optional country code, spaces, dashes and parentheses */
+const PHONE_PATTERN = /^[+]?[\d\s\-()]{7,15}$/;
+
 @Component({
   selector: 'app-complete-profile',
   standalone: true,
@@ -31,7 +34,7 @@ export class CompleteProfileComponent {
   form = this.fb.group({
     phoneNumber: ['', [
       Validators.required,
-      Validators.pattern(/^[+]?[\d\s\-()]{7,15}$/),
+      Validators.pattern(PHONE_PATTERN),
     ]],
   });
 

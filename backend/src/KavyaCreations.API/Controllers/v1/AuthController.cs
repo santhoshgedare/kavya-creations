@@ -47,7 +47,7 @@ public sealed class AuthController(ISender mediator, ICurrentUserService current
             Provider:    "Google",
             IdToken:     request.IdToken,
             Email:       payload.Email,
-            FirstName:   payload.FirstName ?? payload.Email.Split('@')[0],
+            FirstName:   payload.FirstName ?? "User",
             LastName:    payload.LastName ?? string.Empty,
             ProviderKey: payload.Subject
         );

@@ -41,7 +41,7 @@ public sealed class ExternalSignInCommandHandler(
                 user = new ApplicationUser
                 {
                     FirstName = request.FirstName,
-                    LastName  = string.IsNullOrWhiteSpace(request.LastName) ? request.FirstName : request.LastName,
+                    LastName  = request.LastName,
                     UserName  = request.Email,
                     Email     = request.Email,
                     EmailConfirmed = true,

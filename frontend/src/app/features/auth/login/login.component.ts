@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, AfterViewInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, signal, AfterViewInit, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -32,6 +32,8 @@ export class LoginComponent implements AfterViewInit {
   hidePassword = signal(true);
   readonly googleClientId = environment.googleClientId;
 
+  private static readonly GOOGLE_SDK_RETRY_DELAY_MS = 300;
+
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
@@ -55,7 +57,7 @@ export class LoginComponent implements AfterViewInit {
           { theme: 'outline', size: 'large', width: 320, text: 'signin_with' }
         );
       } else {
-        setTimeout(tryInit, 300);
+        setTimeout(tryInit, LoginComponent.GOOGLE_SDK_RETRY_DELAY_MS);
       }
     };
     tryInit();
