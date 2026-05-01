@@ -75,6 +75,14 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/products/admin-products.component').then(m => m.AdminProductsComponent)
       },
       {
+        path: 'products/create',
+        loadComponent: () => import('./features/admin/products/editor/product-editor.component').then(m => m.ProductEditorComponent)
+      },
+      {
+        path: 'products/edit/:id',
+        loadComponent: () => import('./features/admin/products/editor/product-editor.component').then(m => m.ProductEditorComponent)
+      },
+      {
         path: 'orders',
         loadComponent: () => import('./features/admin/orders/admin-orders.component').then(m => m.AdminOrdersComponent)
       },
@@ -89,6 +97,14 @@ export const routes: Routes = [
       {
         path: 'categories',
         loadComponent: () => import('./features/admin/categories/admin-categories.component').then(m => m.AdminCategoriesComponent)
+      },
+      {
+        path: 'categories/create',
+        loadComponent: () => import('./features/admin/categories/editor/category-editor.component').then(m => m.CategoryEditorComponent)
+      },
+      {
+        path: 'categories/edit/:id',
+        loadComponent: () => import('./features/admin/categories/editor/category-editor.component').then(m => m.CategoryEditorComponent)
       }
     ]
   },

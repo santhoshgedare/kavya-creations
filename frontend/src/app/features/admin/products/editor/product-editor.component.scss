@@ -1,0 +1,294 @@
+.editor-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px 120px;
+}
+
+// ─── Breadcrumb ───────────────────────────────────────────────────────────────
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+}
+
+.breadcrumb-link {
+  color: var(--kc-primary);
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover { text-decoration: underline; }
+}
+
+.breadcrumb-sep {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: var(--kc-text-muted);
+}
+
+.breadcrumb-current {
+  color: var(--kc-text-secondary);
+  font-weight: 500;
+}
+
+// ─── Page Title ───────────────────────────────────────────────────────────────
+.page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--kc-text-primary);
+  margin: 0 0 32px;
+}
+
+// ─── Stepper ─────────────────────────────────────────────────────────────────
+.product-stepper {
+  background: transparent !important;
+  width: 100%;
+}
+
+// ─── Step Content ────────────────────────────────────────────────────────────
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 0 8px;
+}
+
+// ─── Cards ────────────────────────────────────────────────────────────────────
+.form-card {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+
+  mat-card-header {
+    padding: 20px 24px 0;
+  }
+
+  [mat-card-avatar] {
+    font-size: 24px !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: var(--kc-surface-alt);
+    border-radius: var(--radius-md) !important;
+    color: var(--kc-primary) !important;
+  }
+}
+
+.card-content {
+  padding: 20px 24px 24px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ─── Form Fields ──────────────────────────────────────────────────────────────
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.flex1 {
+  flex: 1;
+  min-width: 140px;
+}
+
+.flex2 {
+  flex: 2;
+  min-width: 200px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.featured-check {
+  margin: 4px 0;
+}
+
+// ─── Step Actions ─────────────────────────────────────────────────────────────
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+
+// ─── Attributes Step ─────────────────────────────────────────────────────────
+.attr-select-block {
+  margin-bottom: 20px;
+}
+
+.attr-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  color: var(--kc-text-secondary);
+}
+
+.required-mark {
+  color: #f44336;
+}
+
+.value-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.value-chip-btn {
+  border-radius: 20px !important;
+  padding: 4px 16px !important;
+  font-size: 0.85rem !important;
+  transition: background 0.15s, color 0.15s !important;
+
+  &.selected {
+    background: var(--kc-primary) !important;
+    color: white !important;
+    border-color: var(--kc-primary) !important;
+  }
+}
+
+.variant-preview {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--kc-surface-alt);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--kc-border);
+}
+
+.preview-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--kc-text-secondary);
+  margin: 0 0 12px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.variant-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+// ─── Pricing Table ───────────────────────────────────────────────────────────
+.pricing-table-wrap {
+  overflow-x: auto;
+}
+
+.variant-pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-width: 560px;
+
+  th {
+    background: var(--kc-surface-alt);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--kc-text-secondary);
+    border-bottom: 1px solid var(--kc-divider);
+  }
+
+  td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--kc-divider);
+    vertical-align: middle;
+
+    &:last-child { border-bottom-color: var(--kc-border); }
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+.variant-label-chips {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.variant-chip {
+  font-size: 0.75rem !important;
+  min-height: 24px !important;
+  padding: 0 8px !important;
+}
+
+.inline-input {
+  border: 1px solid var(--kc-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  width: 100%;
+  background: white;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: var(--kc-primary); }
+}
+
+.price-input { width: 100px; }
+.stock-input { width: 80px; }
+
+// ─── Empty / Loading States ──────────────────────────────────────────────────
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 64px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  color: var(--kc-text-muted);
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+  }
+
+  p { margin: 0; font-size: 0.95rem; }
+}
+
+// ─── Sticky Action Bar ───────────────────────────────────────────────────────
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid var(--kc-divider);
+  box-shadow: 0 -4px 16px rgba(26, 26, 46, 0.08);
+  z-index: 100;
+}
+
+.action-bar-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-spinner {
+  display: inline-block !important;
+  margin-right: 6px;
+}
