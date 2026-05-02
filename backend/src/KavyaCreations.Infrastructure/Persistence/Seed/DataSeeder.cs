@@ -14,7 +14,6 @@ public static class DataSeeder
         await SeedRolesAsync(roleManager);
         await SeedUsersAsync(userManager);
         await SeedCategoriesAsync(db);
-        await SeedAttributesAsync(db);
         await SeedProductsAsync(db);
     }
 
@@ -75,77 +74,6 @@ public static class DataSeeder
             Category.Create("Accessories", "accessories", "Handmade rings, anklets, and other jewellery"),
         };
         db.Categories.AddRange(categories);
-        await db.SaveChangesAsync();
-    }
-
-    private static async Task SeedAttributesAsync(AppDbContext db)
-    {
-        if (await db.ProductAttributes.AnyAsync()) return;
-
-        // ── Create attributes ──────────────────────────────────────────────────
-        var metalType = ProductAttribute.Create("metal_type", "Metal Type", "select");
-        var size      = ProductAttribute.Create("size",       "Size",       "chips");
-        var finish    = ProductAttribute.Create("finish",     "Finish",     "select");
-
-        db.ProductAttributes.AddRange(metalType, size, finish);
-        await db.SaveChangesAsync();
-
-        // ── Attribute values ───────────────────────────────────────────────────
-        var metalValues = new[]
-        {
-            ProductAttributeValue.Create(metalType.Id, "gold_plated",   "Gold Plated",   0),
-            ProductAttributeValue.Create(metalType.Id, "silver_925",    "925 Silver",    1),
-            ProductAttributeValue.Create(metalType.Id, "rose_gold",     "Rose Gold",     2),
-            ProductAttributeValue.Create(metalType.Id, "oxidized",      "Oxidized",      3),
-            ProductAttributeValue.Create(metalType.Id, "brass",         "Brass",         4),
-        };
-        var sizeValues = new[]
-        {
-            ProductAttributeValue.Create(size.Id, "xs",         "XS",          0),
-            ProductAttributeValue.Create(size.Id, "s",          "S",           1),
-            ProductAttributeValue.Create(size.Id, "m",          "M",           2),
-            ProductAttributeValue.Create(size.Id, "l",          "L",           3),
-            ProductAttributeValue.Create(size.Id, "xl",         "XL",          4),
-            ProductAttributeValue.Create(size.Id, "free_size",  "Free Size",   5),
-        };
-        var finishValues = new[]
-        {
-            ProductAttributeValue.Create(finish.Id, "polished",   "Polished",    0),
-            ProductAttributeValue.Create(finish.Id, "matte",      "Matte",       1),
-            ProductAttributeValue.Create(finish.Id, "antique",    "Antique",     2),
-            ProductAttributeValue.Create(finish.Id, "textured",   "Textured",    3),
-        };
-
-        db.ProductAttributeValues.AddRange(metalValues);
-        db.ProductAttributeValues.AddRange(sizeValues);
-        db.ProductAttributeValues.AddRange(finishValues);
-        await db.SaveChangesAsync();
-
-        // ── Map attributes to categories ───────────────────────────────────────
-        var banglesId     = (await db.Categories.FirstAsync(c => c.Slug == "bangles")).Id;
-        var earringsId    = (await db.Categories.FirstAsync(c => c.Slug == "earrings")).Id;
-        var necklacesId   = (await db.Categories.FirstAsync(c => c.Slug == "necklaces")).Id;
-        var accessoriesId = (await db.Categories.FirstAsync(c => c.Slug == "accessories")).Id;
-
-        var mappings = new[]
-        {
-            // Bangles: Metal Type (required), Size, Finish
-            CategoryAttributeMapping.Create(banglesId,     metalType.Id, 0, isRequired: true),
-            CategoryAttributeMapping.Create(banglesId,     size.Id,      1),
-            CategoryAttributeMapping.Create(banglesId,     finish.Id,    2),
-            // Earrings: Metal Type (required), Finish
-            CategoryAttributeMapping.Create(earringsId,   metalType.Id, 0, isRequired: true),
-            CategoryAttributeMapping.Create(earringsId,   finish.Id,    1),
-            // Necklaces: Metal Type (required), Finish
-            CategoryAttributeMapping.Create(necklacesId,  metalType.Id, 0, isRequired: true),
-            CategoryAttributeMapping.Create(necklacesId,  finish.Id,    1),
-            // Accessories: Metal Type, Size, Finish
-            CategoryAttributeMapping.Create(accessoriesId, metalType.Id, 0, isRequired: true),
-            CategoryAttributeMapping.Create(accessoriesId, size.Id,      1),
-            CategoryAttributeMapping.Create(accessoriesId, finish.Id,    2),
-        };
-
-        db.CategoryAttributeMappings.AddRange(mappings);
         await db.SaveChangesAsync();
     }
 
