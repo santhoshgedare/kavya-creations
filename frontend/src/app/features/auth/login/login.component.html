@@ -55,6 +55,14 @@
       </button>
     </form>
 
+    @if (googleClientId) {
+      <div class="divider"><span>or</span></div>
+
+      <div class="google-signin-wrap">
+        <div id="google-signin-btn"></div>
+      </div>
+    }
+
     <div class="auth-footer">
       <p>Don't have an account? <a routerLink="/auth/register">Create one</a></p>
     </div>

@@ -29,3 +29,20 @@ public interface ICacheService
     Task RemoveAsync(string key, CancellationToken ct = default);
     Task RemoveByPrefixAsync(string prefix, CancellationToken ct = default);
 }
+
+public interface IGoogleTokenValidator
+{
+    /// <summary>
+    /// Validates a Google ID token and returns the payload if valid; otherwise throws.
+    /// </summary>
+    Task<GoogleTokenPayload> ValidateAsync(string idToken, CancellationToken ct = default);
+}
+
+public record GoogleTokenPayload(
+    string Subject,    // Google user ID (sub claim)
+    string Email,
+    string? FirstName,
+    string? LastName,
+    string? PictureUrl
+);
+
