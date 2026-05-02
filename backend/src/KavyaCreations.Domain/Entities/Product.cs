@@ -16,9 +16,6 @@ public class Product : BaseEntity
     public Money Price { get; private set; } = Money.Zero();
     public Money? DiscountPrice { get; private set; }
     public int StockQuantity { get; private set; }
-    public string? Material { get; private set; }
-    public string? Dimensions { get; private set; }
-    public string? Weight { get; private set; }
     public ProductStatus Status { get; private set; } = ProductStatus.Active;
     public bool IsFeatured { get; private set; }
     public Guid CategoryId { get; private set; }
@@ -36,7 +33,6 @@ public class Product : BaseEntity
         decimal price,
         int stockQuantity,
         Guid categoryId,
-        string? material = null,
         string? shortDescription = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -51,7 +47,6 @@ public class Product : BaseEntity
             Price = Money.Create(price),
             StockQuantity = stockQuantity,
             CategoryId = categoryId,
-            Material = material,
             Status = stockQuantity > 0 ? ProductStatus.Active : ProductStatus.OutOfStock
         };
 
@@ -65,9 +60,6 @@ public class Product : BaseEntity
         decimal price,
         string updatedBy,
         string? shortDescription = null,
-        string? material = null,
-        string? dimensions = null,
-        string? weight = null,
         decimal? discountPrice = null)
     {
         Name = name;
@@ -75,9 +67,6 @@ public class Product : BaseEntity
         ShortDescription = shortDescription;
         Price = Money.Create(price);
         DiscountPrice = discountPrice.HasValue ? Money.Create(discountPrice.Value) : null;
-        Material = material;
-        Dimensions = dimensions;
-        Weight = weight;
         SetAudit(updatedBy);
     }
 

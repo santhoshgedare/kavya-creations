@@ -16,9 +16,6 @@ public record CreateProductCommand(
     decimal? DiscountPrice,
     int StockQuantity,
     Guid CategoryId,
-    string? Material,
-    string? Dimensions,
-    string? Weight,
     bool IsFeatured,
     List<string> ImageUrls
 ) : IRequest<Guid>;
@@ -53,12 +50,11 @@ public sealed class CreateProductCommandHandler(IApplicationDbContext db, ICurre
         var product = Product.Create(
             request.Name, request.Slug, request.Description,
             request.Price, request.StockQuantity, request.CategoryId,
-            request.Material, request.ShortDescription);
+            request.ShortDescription);
 
         if (request.DiscountPrice.HasValue)
             product.UpdateDetails(request.Name, request.Description, request.Price,
-                currentUser.Email ?? "system", request.ShortDescription, request.Material,
-                request.Dimensions, request.Weight, request.DiscountPrice);
+                currentUser.Email ?? "system", request.ShortDescription, request.DiscountPrice);
 
         for (int i = 0; i < request.ImageUrls.Count; i++)
         {

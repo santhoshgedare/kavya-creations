@@ -38,8 +38,7 @@ public sealed class GetProductsQueryHandler(IApplicationDbContext db)
             var search = request.Search.ToLower();
             query = query.Where(p =>
                 p.Name.ToLower().Contains(search) ||
-                p.Description.ToLower().Contains(search) ||
-                (p.Material != null && p.Material.ToLower().Contains(search)));
+                p.Description.ToLower().Contains(search));
         }
 
         if (request.MinPrice.HasValue)

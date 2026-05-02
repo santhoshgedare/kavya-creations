@@ -13,6 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { ProductService } from '../../../../core/services/product.service';
 import { VariantService } from '../../../../core/services/variant.service';
 import { Category, CategoryAttribute, ProductAttribute } from '../../../../core/models/product.model';
@@ -27,6 +28,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../../shared/co
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule,
     MatIconModule, MatProgressSpinnerModule, MatSelectModule,
     MatCheckboxModule, MatChipsModule, MatDividerModule, MatDialogModule,
+    MatExpansionModule,
     ImageUploadComponent,
   ],
   templateUrl: './category-editor.component.html',
@@ -51,6 +53,10 @@ export class CategoryEditorComponent implements OnInit {
   allAttributes = signal<ProductAttribute[]>([]);
   categoryAttributes = signal<CategoryAttribute[]>([]);
 
+  showCreateAttrForm = signal(false);
+  creatingAttr = signal(false);
+  addingValueToAttrId = signal<string | null>(null);
+
   existingImageUrls: string[] = [];
 
   form = this.fb.group({
@@ -64,6 +70,20 @@ export class CategoryEditorComponent implements OnInit {
     attributeId: ['', Validators.required],
     displayOrder: [0],
     isRequired: [false],
+  });
+
+  createAttrForm = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(100), Validators.pattern(/^[a-z0-9_]+$/)]],
+    displayName: ['', [Validators.required, Validators.maxLength(100)]],
+    inputType: ['chips', Validators.required],
+    displayOrder: [0],
+    isRequired: [false],
+  });
+
+  addValueForm = this.fb.group({
+    value: ['', [Validators.required, Validators.maxLength(100)]],
+    displayValue: ['', [Validators.required, Validators.maxLength(100)]],
+    displayOrder: [0],
   });
 
   ngOnInit(): void {
@@ -199,5 +219,71 @@ export class CategoryEditorComponent implements OnInit {
   unmappedAttributes(): ProductAttribute[] {
     const mapped = new Set(this.categoryAttributes().map(ca => ca.attributeId));
     return this.allAttributes().filter(a => !mapped.has(a.id));
+  }
+
+  createAttributeAndMap(): void {
+    if (this.createAttrForm.invalid || !this.categoryId()) return;
+    const val = this.createAttrForm.value;
+    this.creatingAttr.set(true);
+    this.variantService.createAttribute({
+      name: val.name!,
+      displayName: val.displayName!,
+      inputType: val.inputType!,
+    }).subscribe({
+      next: (attrId) => {
+        this.variantService.mapAttributeToCategory({
+          categoryId: this.categoryId()!,
+          attributeId: attrId,
+          displayOrder: val.displayOrder ?? 0,
+          isRequired: val.isRequired ?? false,
+        }).subscribe({
+          next: () => {
+            this.snackBar.open(`Attribute "${val.displayName}" created and mapped!`, 'Close', { duration: 3000 });
+            this.createAttrForm.reset({ inputType: 'chips', displayOrder: 0, isRequired: false });
+            this.showCreateAttrForm.set(false);
+            this.variantService.getAllAttributes().subscribe(attrs => this.allAttributes.set(attrs));
+            this.loadCategoryAttributes(this.categoryId()!);
+            this.creatingAttr.set(false);
+          },
+          error: (err) => {
+            this.snackBar.open(err?.error?.message ?? 'Failed to map new attribute', 'Close', { duration: 3000 });
+            this.creatingAttr.set(false);
+          },
+        });
+      },
+      error: (err) => {
+        this.snackBar.open(err?.error?.message ?? 'Failed to create attribute', 'Close', { duration: 3000 });
+        this.creatingAttr.set(false);
+      },
+    });
+  }
+
+  addValueToAttribute(attributeId: string): void {
+    if (this.addValueForm.invalid) return;
+    const val = this.addValueForm.value;
+    this.variantService.addAttributeValue(attributeId, {
+      value: val.value!,
+      displayValue: val.displayValue!,
+      displayOrder: val.displayOrder ?? 0,
+    }).subscribe({
+      next: () => {
+        this.snackBar.open('Value added!', 'Close', { duration: 2000 });
+        this.addValueForm.reset({ displayOrder: 0 });
+        this.addingValueToAttrId.set(null);
+        this.variantService.getAllAttributes().subscribe(attrs => this.allAttributes.set(attrs));
+        this.loadCategoryAttributes(this.categoryId()!);
+      },
+      error: (err) => this.snackBar.open(err?.error?.message ?? 'Failed to add value', 'Close', { duration: 3000 }),
+    });
+  }
+
+  startAddValue(attributeId: string): void {
+    this.addingValueToAttrId.set(attributeId);
+    this.addValueForm.reset({ displayOrder: 0 });
+  }
+
+  cancelAddValue(): void {
+    this.addingValueToAttrId.set(null);
+    this.addValueForm.reset({ displayOrder: 0 });
   }
 }

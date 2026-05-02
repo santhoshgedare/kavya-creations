@@ -116,27 +116,6 @@
             </mat-card-content>
           </mat-card>
 
-          <!-- Physical Details -->
-          <mat-card class="form-card">
-            <mat-card-header>
-              <mat-icon mat-card-avatar>straighten</mat-icon>
-              <mat-card-title>Physical Details</mat-card-title>
-              <mat-card-subtitle>Optional material and weight information</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content [formGroup]="basicForm" class="card-content">
-              <div class="form-row">
-                <mat-form-field appearance="outline" class="flex1">
-                  <mat-label>Material</mat-label>
-                  <input matInput formControlName="material" placeholder="e.g. 22K Gold">
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="flex1">
-                  <mat-label>Weight</mat-label>
-                  <input matInput formControlName="weight" placeholder="e.g. 5g">
-                </mat-form-field>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
           <div class="step-actions">
             <button mat-flat-button color="primary" matStepperNext (click)="onStep1Next()">
               Next: Attributes <mat-icon iconPositionEnd>arrow_forward</mat-icon>

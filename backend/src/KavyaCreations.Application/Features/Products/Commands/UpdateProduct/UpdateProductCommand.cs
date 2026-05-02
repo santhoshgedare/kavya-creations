@@ -15,9 +15,6 @@ public record UpdateProductCommand(
     decimal? DiscountPrice,
     int StockQuantity,
     Guid CategoryId,
-    string? Material,
-    string? Dimensions,
-    string? Weight,
     bool IsFeatured
 ) : IRequest;
 
@@ -44,8 +41,7 @@ public sealed class UpdateProductCommandHandler(IApplicationDbContext db, ICurre
 
         product.UpdateDetails(
             request.Name, request.Description, request.Price,
-            currentUser.Email ?? "system", request.ShortDescription,
-            request.Material, request.Dimensions, request.Weight, request.DiscountPrice);
+            currentUser.Email ?? "system", request.ShortDescription, request.DiscountPrice);
 
         product.UpdateStock(request.StockQuantity, currentUser.Email ?? "system");
         product.SetFeatured(request.IsFeatured, currentUser.Email ?? "system");

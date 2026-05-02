@@ -14,9 +14,6 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.Slug).IsRequired().HasMaxLength(200);
         builder.Property(p => p.Description).IsRequired().HasMaxLength(5000);
         builder.Property(p => p.ShortDescription).HasMaxLength(500);
-        builder.Property(p => p.Material).HasMaxLength(200);
-        builder.Property(p => p.Dimensions).HasMaxLength(100);
-        builder.Property(p => p.Weight).HasMaxLength(50);
 
         builder.OwnsOne(p => p.Price, money =>
         {
