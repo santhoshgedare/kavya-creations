@@ -12,7 +12,7 @@ namespace KavyaCreations.API.Controllers.v1;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/auth")]
-public sealed class AuthController(ISender mediator, ICurrentUserService currentUser) : ControllerBase
+public sealed class AuthController(ISender mediator, ICurrentUserService currentUser, IGoogleTokenValidator googleTokenValidator) : ControllerBase
 {
     [HttpPost("register")]
     [ProducesResponseType<AuthResponseDto>(StatusCodes.Status201Created)]
@@ -35,6 +35,23 @@ public sealed class AuthController(ISender mediator, ICurrentUserService current
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken ct)
     {
         var result = await mediator.Send(new RefreshTokenCommand(request), ct);
+        return Ok(result);
+    }
+
+    [HttpPost("google-signin")]
+    [ProducesResponseType<AuthResponseDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GoogleSignIn([FromBody] GoogleSignInRequest request, CancellationToken ct)
+    {
+        var payload = await googleTokenValidator.ValidateAsync(request.IdToken, ct);
+        var command = new ExternalSignInCommand(
+            Provider:    "Google",
+            IdToken:     request.IdToken,
+            Email:       payload.Email,
+            FirstName:   payload.FirstName ?? "User",
+            LastName:    payload.LastName ?? string.Empty,
+            ProviderKey: payload.Subject
+        );
+        var result = await mediator.Send(command, ct);
         return Ok(result);
     }
 
@@ -72,3 +89,4 @@ public sealed class AuthController(ISender mediator, ICurrentUserService current
         return Ok(result);
     }
 }
+

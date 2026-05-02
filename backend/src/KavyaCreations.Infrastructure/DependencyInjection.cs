@@ -72,6 +72,7 @@ public static class DependencyInjection
         services.AddSingleton<ICacheService, MemoryCacheService>();
         services.AddMemoryCache();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
+        services.AddScoped<IGoogleTokenValidator, GoogleTokenValidator>();
 
         // Email settings
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));

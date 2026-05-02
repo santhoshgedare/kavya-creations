@@ -11,10 +11,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductService } from '../../../core/services/product.service';
 import { VariantService } from '../../../core/services/variant.service';
 import { Category, CategoryAttribute, ProductAttribute } from '../../../core/models/product.model';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 // ── Admin Categories Component ────────────────────────────────────────────────
 
@@ -24,7 +26,7 @@ import { Category, CategoryAttribute, ProductAttribute } from '../../../core/mod
   imports: [
     RouterLink, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatCheckboxModule, MatProgressSpinnerModule, MatChipsModule, MatCardModule,
+    MatCheckboxModule, MatProgressSpinnerModule, MatChipsModule, MatCardModule, MatDialogModule,
   ],
   templateUrl: './admin-categories.component.html',
   styleUrl: './admin-categories.component.scss',
@@ -33,6 +35,7 @@ export class AdminCategoriesComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly variantService = inject(VariantService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
 
@@ -72,15 +75,25 @@ export class AdminCategoriesComponent implements OnInit {
   }
 
   deleteCategory(cat: Category): void {
-    if (!confirm(`Delete category "${cat.name}"? This cannot be undone.`)) return;
-    this.productService.deleteCategory(cat.id).subscribe({
-      next: () => {
-        this.snackBar.open('Deleted', 'Close', { duration: 2000 });
-        this.loadCategories();
-        if (this.selectedCategory()?.id === cat.id) this.selectedCategory.set(null);
-      },
-      error: (err) => this.snackBar.open(err?.error?.message ?? 'Failed to delete', 'Close', { duration: 3000 }),
-    });
+    const data: ConfirmDialogData = {
+      title: 'Delete Category',
+      message: `Are you sure you want to delete "${cat.name}"? This cannot be undone.`,
+      confirmLabel: 'Delete',
+      confirmColor: 'warn',
+      icon: 'delete_forever',
+    };
+    this.dialog.open(ConfirmDialogComponent, { data, width: '400px' })
+      .afterClosed().subscribe(confirmed => {
+        if (!confirmed) return;
+        this.productService.deleteCategory(cat.id).subscribe({
+          next: () => {
+            this.snackBar.open('Deleted', 'Close', { duration: 2000 });
+            this.loadCategories();
+            if (this.selectedCategory()?.id === cat.id) this.selectedCategory.set(null);
+          },
+          error: (err) => this.snackBar.open(err?.error?.message ?? 'Failed to delete', 'Close', { duration: 3000 }),
+        });
+      });
   }
 
   selectCategory(cat: Category): void {
@@ -114,14 +127,24 @@ export class AdminCategoriesComponent implements OnInit {
   }
 
   removeMapping(mappingId: string): void {
-    if (!confirm('Remove this attribute from category?')) return;
-    this.variantService.removeAttributeFromCategory(mappingId).subscribe({
-      next: () => {
-        this.snackBar.open('Removed', 'Close', { duration: 2000 });
-        this.loadCategoryAttributes(this.selectedCategory()!.id);
-      },
-      error: () => this.snackBar.open('Failed to remove', 'Close', { duration: 3000 }),
-    });
+    const data: ConfirmDialogData = {
+      title: 'Remove Attribute',
+      message: 'Remove this attribute from the category?',
+      confirmLabel: 'Remove',
+      confirmColor: 'warn',
+      icon: 'link_off',
+    };
+    this.dialog.open(ConfirmDialogComponent, { data, width: '360px' })
+      .afterClosed().subscribe(confirmed => {
+        if (!confirmed) return;
+        this.variantService.removeAttributeFromCategory(mappingId).subscribe({
+          next: () => {
+            this.snackBar.open('Removed', 'Close', { duration: 2000 });
+            this.loadCategoryAttributes(this.selectedCategory()!.id);
+          },
+          error: () => this.snackBar.open('Failed to remove', 'Close', { duration: 3000 }),
+        });
+      });
   }
 
   unmappedAttributes(): ProductAttribute[] {
@@ -129,3 +152,4 @@ export class AdminCategoriesComponent implements OnInit {
     return this.allAttributes().filter(a => !mapped.has(a.id));
   }
 }
+

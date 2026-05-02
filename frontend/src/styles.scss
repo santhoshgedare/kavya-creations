@@ -229,7 +229,7 @@ a:hover { color: var(--kc-primary-light); }
 }
 
 .price-discounted {
-  color: var(--kc-primary);
+  color: var(--kc-accent);
   font-weight: 700;
   font-size: 1.1rem;
 }
@@ -237,7 +237,7 @@ a:hover { color: var(--kc-primary-light); }
 .sale-badge {
   display: inline-flex;
   align-items: center;
-  background: var(--kc-primary);
+  background: var(--kc-accent);
   color: #fff;
   font-size: 0.65rem;
   font-weight: 700;
