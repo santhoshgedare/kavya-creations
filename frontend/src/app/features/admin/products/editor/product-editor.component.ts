@@ -79,8 +79,6 @@ export class ProductEditorComponent implements OnInit {
     discountPrice: [null as number | null],
     stockQuantity: [0 as number, Validators.required],
     categoryId: ['' as string, Validators.required],
-    material: [''],
-    weight: [''],
     status: [1 as number],
     isFeatured: [false],
   });
@@ -108,8 +106,6 @@ export class ProductEditorComponent implements OnInit {
           discountPrice: product.discountPrice ?? null,
           stockQuantity: product.stockQuantity,
           categoryId: product.categoryId,
-          material: product.material ?? '',
-          weight: product.weight ?? '',
           status: product.status,
           isFeatured: product.isFeatured,
         });

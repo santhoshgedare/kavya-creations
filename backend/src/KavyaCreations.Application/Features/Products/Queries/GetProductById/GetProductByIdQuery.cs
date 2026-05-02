@@ -26,7 +26,6 @@ public sealed class GetProductByIdQueryHandler(IApplicationDbContext db)
         p.Id, p.Name, p.Slug, p.Description, p.ShortDescription,
         p.Price.Amount, p.DiscountPrice?.Amount,
         p.GetEffectivePrice(), p.StockQuantity,
-        p.Material, p.Dimensions, p.Weight,
         p.Status, p.IsFeatured, p.CategoryId, p.Category.Name,
         p.Images.Select(i => new ProductImageDto(i.Id, i.Url, i.AltText, i.IsPrimary)).ToList(),
         p.CreatedAt, p.UpdatedAt);

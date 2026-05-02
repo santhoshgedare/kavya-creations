@@ -15,9 +15,6 @@ export interface Product {
   discountPrice?: number;
   effectivePrice: number;
   stockQuantity: number;
-  material?: string;
-  dimensions?: string;
-  weight?: string;
   status: ProductStatus;
   isFeatured: boolean;
   categoryId: string;

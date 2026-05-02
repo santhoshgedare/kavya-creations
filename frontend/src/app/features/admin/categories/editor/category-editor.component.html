@@ -96,12 +96,42 @@
                           @for (v of ca.values; track v.id) {
                             <mat-chip class="val-chip">{{ v.displayValue }}</mat-chip>
                           }
+                          <button mat-icon-button class="add-value-btn" title="Add value"
+                                  (click)="startAddValue(ca.attributeId)">
+                            <mat-icon>add_circle_outline</mat-icon>
+                          </button>
                         </span>
                       </div>
                       <button mat-icon-button color="warn" (click)="removeMapping(ca.mappingId)" title="Remove attribute">
                         <mat-icon>remove_circle_outline</mat-icon>
                       </button>
                     </div>
+                    @if (addingValueToAttrId() === ca.attributeId) {
+                      <div class="add-value-inline" [formGroup]="addValueForm">
+                        <h5 class="subsection-title">Add Value to "{{ ca.attributeDisplayName }}"</h5>
+                        <div class="inline-form-row">
+                          <mat-form-field appearance="outline" class="flex1">
+                            <mat-label>Internal Key</mat-label>
+                            <input matInput formControlName="value" placeholder="e.g. gold_plated">
+                            <mat-hint>Lowercase, no spaces</mat-hint>
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" class="flex1">
+                            <mat-label>Display Label</mat-label>
+                            <input matInput formControlName="displayValue" placeholder="e.g. Gold Plated">
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" style="width:90px">
+                            <mat-label>Order</mat-label>
+                            <input matInput type="number" formControlName="displayOrder">
+                          </mat-form-field>
+                          <button mat-flat-button color="primary"
+                                  [disabled]="addValueForm.invalid"
+                                  (click)="addValueToAttribute(ca.attributeId)">
+                            <mat-icon>add</mat-icon> Add
+                          </button>
+                          <button mat-stroked-button type="button" (click)="cancelAddValue()">Cancel</button>
+                        </div>
+                      </div>
+                    }
                   }
                 </div>
               } @else {
@@ -110,7 +140,7 @@
 
               @if (unmappedAttributes().length > 0) {
                 <mat-divider class="section-divider"></mat-divider>
-                <h4 class="subsection-title">Add Attribute</h4>
+                <h4 class="subsection-title">Map Existing Attribute</h4>
                 <form [formGroup]="mappingForm" (ngSubmit)="mapAttribute()" class="mapping-form">
                   <mat-form-field appearance="outline" class="flex2">
                     <mat-label>Attribute</mat-label>
@@ -129,16 +159,62 @@
                     <mat-icon>add</mat-icon> Add
                   </button>
                 </form>
-              } @else if (allAttributes().length === 0) {
-                <p class="empty-hint">
-                  No attributes available.
-                  <a routerLink="/admin/attributes">Create attributes first.</a>
-                </p>
-              } @else {
+              } @else if (categoryAttributes().length > 0) {
                 <p class="all-mapped-msg">
                   <mat-icon color="primary">check_circle</mat-icon>
                   All available attributes are already mapped.
                 </p>
+              }
+
+              <!-- Create new attribute inline -->
+              <mat-divider class="section-divider"></mat-divider>
+              @if (!showCreateAttrForm()) {
+                <button mat-stroked-button color="primary" (click)="showCreateAttrForm.set(true)" class="create-attr-btn">
+                  <mat-icon>add</mat-icon> Create New Attribute
+                </button>
+              } @else {
+                <h4 class="subsection-title">Create New Attribute &amp; Map to Category</h4>
+                <form [formGroup]="createAttrForm" (ngSubmit)="createAttributeAndMap()" class="create-attr-form">
+                  <div class="inline-form-row">
+                    <mat-form-field appearance="outline" class="flex1">
+                      <mat-label>Internal Key</mat-label>
+                      <input matInput formControlName="name" placeholder="e.g. stone_type">
+                      <mat-hint>Lowercase letters, numbers, underscores only</mat-hint>
+                      @if (createAttrForm.get('name')?.touched && createAttrForm.get('name')?.errors?.['pattern']) {
+                        <mat-error>Only lowercase letters, numbers and underscores allowed</mat-error>
+                      }
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="flex1">
+                      <mat-label>Display Name</mat-label>
+                      <input matInput formControlName="displayName" placeholder="e.g. Stone Type">
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" style="width:140px">
+                      <mat-label>Input Type</mat-label>
+                      <mat-select formControlName="inputType">
+                        <mat-option value="chips">Chips</mat-option>
+                        <mat-option value="select">Select</mat-option>
+                        <mat-option value="radio">Radio</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" style="width:90px">
+                      <mat-label>Order</mat-label>
+                      <input matInput type="number" formControlName="displayOrder">
+                    </mat-form-field>
+                  </div>
+                  <div class="inline-form-row">
+                    <mat-checkbox formControlName="isRequired" class="req-check">Required</mat-checkbox>
+                    <button mat-flat-button color="primary" type="submit"
+                            [disabled]="createAttrForm.invalid || creatingAttr()">
+                      @if (creatingAttr()) {
+                        <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+                      } @else {
+                        <mat-icon>add</mat-icon>
+                      }
+                      Create &amp; Map
+                    </button>
+                    <button mat-stroked-button type="button" (click)="showCreateAttrForm.set(false)">Cancel</button>
+                  </div>
+                </form>
               }
             </mat-card-content>
           </mat-card>
